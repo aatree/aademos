@@ -1,13 +1,7 @@
 # counters
 
-This project demonstrates a simple counting widget in [Hoplon][2].
-
-[See this demo.](https://hoplon.github.io/demos/counters/)
-
-## Dependencies
-
-- java 1.7+
-- [boot][1]
+This project exercises aalog in the aautil repository
+and was adopted from the [Hoplon][2] counters demo.
 
 ## Usage
 
@@ -19,6 +13,5 @@ This project demonstrates a simple counting widget in [Hoplon][2].
 
 2. Go to [http://localhost:8000][3] in your browser.
 
-[1]: https://boot-clj.com
 [2]: https://hoplon.io
 [3]: http://localhost:8000
