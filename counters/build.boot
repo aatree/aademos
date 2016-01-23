@@ -14,8 +14,8 @@
                   [org.apache.logging.log4j/log4j-core       "2.5"]
                   [org.apache.logging.log4j/log4j-slf4j-impl "2.5"]
 ]
-  :source-paths   #{"src"}
-  :resource-paths #{"assets"})
+  :source-paths   #{"src/hl" "src/cljc"}
+  :resource-paths #{"assets" "dev-resources"})
 
 (require
   '[adzerk.boot-cljs         :refer [cljs]]
