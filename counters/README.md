@@ -1,7 +1,7 @@
 # counters
 
-This project exercises aalog in the aautil repository
-and was adopted from the [Hoplon][2] counters demo.
+This project exercises aalog in the aautil repository.
+It was adopted from the [Hoplon][2] counters demo.
 
 ## Usage
 
