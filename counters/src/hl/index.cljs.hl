@@ -20,7 +20,7 @@
         attr         (dissoc attr :size)]
     (add-watch last-clicked :lc
                (fn [_ _ _ i]
-                 (.log js/console (str "last clicked: " i))))
+                 (log/info (str "last clicked: " i))))
     (div attr
       (h1 "A Counting Widget!")
       (p :toggle last-clicked
