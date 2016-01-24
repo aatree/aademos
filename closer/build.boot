@@ -25,7 +25,7 @@
   '[tailrecursion.boot-jetty :refer [serve]])
 
 (deftask dev
-  "Build counters for local development."
+  "Build closer for local development."
   []
   (comp
     (watch)
@@ -37,7 +37,7 @@
     (serve :port 8000)))
 
 (deftask prod
-  "Build counters for production deployment."
+  "Build closer for production deployment."
   []
   (comp
     (hoplon)

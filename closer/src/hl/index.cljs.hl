@@ -1,0 +1,38 @@
+(page "index.html"
+      (:require [aautil.aalog :as log]))
+
+(defelem swap-button
+         [{:keys [state func] :or {func identity} :as attr} kids]
+         (let [attr (dissoc attr :state :func)]
+           ((button :click #(swap! state (deref* func))) attr kids)))
+
+(defelem counter
+  [attr _]
+  (let [my-count (cell 0)]
+    (div attr
+      (label (text "~{my-count}"))
+      (swap-button :state my-count :func inc "+")
+      (swap-button :state my-count :func dec "-"))))
+
+(defelem counters
+  [{:keys [size] :or {size 10} :as attr} _]
+  (let [last-clicked (cell nil)
+        attr         (dissoc attr :size)]
+    (add-watch last-clicked :lc
+               (fn [_ _ _ i]
+                 (log/info (str "last clicked: " i))))
+    (div attr
+      (h1 "A Counting Widget!")
+      (p :toggle last-clicked
+         (text "Last clicked item was ~{last-clicked}"))
+      (loop-tpl :bindings [i (cell= (range 0 size))]
+        (counter :click #(reset! last-clicked @i))))))
+
+(html
+  (head
+    (html-meta :charset "UTF-8")
+    (title "Hoplon • Counters"))
+  (body
+    (counters :size 10)
+    (p (a :href
+         "https://github.com/aatree/aademos/tree/master/counters" "Source code"))))
