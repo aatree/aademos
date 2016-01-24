@@ -31,7 +31,7 @@
 (html
   (head
     (html-meta :charset "UTF-8")
-    (title "Hoplon • Counters"))
+    (title "AATree • Counters"))
   (body
     (counters :size 10)
     (p (a :href
