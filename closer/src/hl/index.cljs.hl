@@ -1,10 +1,29 @@
 (page "index.html"
-      (:require [aautil.closer :as closer]))
+      (:require [aautil.closer :as closer]
+        [aautil.aalog :as log]))
 
+(.log js/console "start")
+(closer/close-component {})
+
+(defn close-a [this] (println "  close a"))
+(defn close-b [this] (println "  close b"))
+(defn close-c [this] (println "  close c"))
+
+(let [this (closer/open-trait {} "a" close-a)
+      this (closer/open-trait this "b" close-b)
+      this (closer/open-trait this "c" close-c)]
+  (.log js/console "first close")
+  (closer/close-component this)
+  (.log js/console "second close")
+  (closer/close-component this))
+
+(.log js/console "done")
 
 (html
   (head
     (html-meta :charset "UTF-8")
     (title "AATree • Counters"))
   (body
-    (p (text "Be sure to open the js console."))))
+    (p (text "Be sure to open the js console."))
+    (p (a :href
+          "https://github.com/aatree/aademos/tree/master/closer" "Source code"))))
