@@ -16,6 +16,6 @@ And be sure to open the js console.
 An INFO log is written to the console each time a different
 counter is clicked.
 
-[1]: https://github.com/aatree/aautil
+[1]: https://github.com/aatree/aautil#aalog
 [2]: https://hoplon.io
 [3]: http://localhost:8000
