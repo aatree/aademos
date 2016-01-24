@@ -12,6 +12,9 @@ It was adopted from the [Hoplon][2] counters demo.
     ```
 
 2. Go to [http://localhost:8000][3] in your browser.
+And be sure to open the js console. 
+An INFO log is written to the console each time a different
+counter is clicked.
 
 [2]: https://hoplon.io
 [3]: http://localhost:8000

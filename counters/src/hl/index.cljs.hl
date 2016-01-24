@@ -35,5 +35,4 @@
   (body
     (counters :size 10)
     (p (a :href
-         "https://github.com/tailrecursion/hoplon-demos/blob/master/counters/src/index.cljs.hl" "Source code"))
-    (p "Inspired by " (a :href "https://github.com/swannodette/om/tree/master/examples/counters" "the Om demo of the same name."))))
+         "https://github.com/aatree/aademos/tree/master/counters" "Source code"))))
