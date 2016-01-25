@@ -1,3 +1,9 @@
 # aademos
 Simple clojure and clojurescript applications illustrating/exercising the 
 [aatree libraries](https://github.com/aatree).
+
+1. [counters demo](https://github.com/aatree/aademos/tree/master/counters) -
+integrates [aalog](https://github.com/aatree/aautil#aalog) with 
+[hoplon](https://github.com/hoplon/hoplon).
+1. [closer demo](https://github.com/aatree/aademos/tree/master/closer) -
+exercises [closer](https://github.com/aatree/aautil#closer).
