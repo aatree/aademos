@@ -1,5 +1,5 @@
 # aademos
-Simple clojure and clojurescript applications illustrating/exercising the 
+Simple web applications illustrating/exercising the 
 [aatree libraries](https://github.com/aatree).
 
 1. [counters demo](https://github.com/aatree/aademos/tree/master/counters) -
