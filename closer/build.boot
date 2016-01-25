@@ -10,7 +10,7 @@
                   [org.clojure/clojure                       "1.8.0"]
                   [org.clojure/clojurescript                 "1.7.228"]
                   [tailrecursion/boot-jetty                  "0.1.3"]
-                  [aatree/aautil                             "0.0.1"]
+                  [aatree/aautil                             "0.0.2"]
                   [org.apache.logging.log4j/log4j-core       "2.5"]
                   [org.apache.logging.log4j/log4j-slf4j-impl "2.5"]
 ]

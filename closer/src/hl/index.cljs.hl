@@ -22,7 +22,7 @@
 (html
   (head
     (html-meta :charset "UTF-8")
-    (title "AATree • Counters"))
+    (title "AATree • Closer"))
   (body
     (p (text "Be sure to open the js console."))
     (p (a :href

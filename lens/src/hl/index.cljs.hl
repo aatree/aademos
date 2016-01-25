@@ -1,0 +1,11 @@
+(page "index.html"
+      (:require [aautil.dewdrop :as lens]))
+
+(html
+  (head
+    (html-meta :charset "UTF-8")
+    (title "AATree • Lens"))
+  (body
+    (p (text "Be sure to open the js console."))
+    (p (a :href
+          "https://github.com/aatree/aademos/tree/master/lens" "Source code"))))

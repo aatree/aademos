@@ -10,9 +10,7 @@
                   [org.clojure/clojure                       "1.8.0"]
                   [org.clojure/clojurescript                 "1.7.228"]
                   [tailrecursion/boot-jetty                  "0.1.3"]
-                  [aatree/aautil                             "0.0.2"]
-                  [org.apache.logging.log4j/log4j-core       "2.5"]
-                  [org.apache.logging.log4j/log4j-slf4j-impl "2.5"]
+                  [aatree/aautil                             "0.0.3"]
 ]
   :source-paths   #{"src/hl"}
   :resource-paths #{"assets" "dev-resources"})
@@ -25,7 +23,7 @@
   '[tailrecursion.boot-jetty :refer [serve]])
 
 (deftask dev
-  "Build counters for local development."
+  "Build for local development."
   []
   (comp
     (watch)
@@ -37,7 +35,7 @@
     (serve :port 8000)))
 
 (deftask prod
-  "Build counters for production deployment."
+  "Build for production deployment."
   []
   (comp
     (hoplon)
