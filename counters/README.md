@@ -1,4 +1,4 @@
-# counters
+# counters demo
 
 This project exercises aalog in the [aautil repository][1].
 It was adopted from the [Hoplon][2] counters demo.

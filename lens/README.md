@@ -1,6 +1,7 @@
-# closer
+# lens demo
 
-This project exercises closer in the [aautil repository][1].
+This project exercises dewdrop in the [aautil repository][1]
+and integrates dewdrop with [hoplon][2].
 
 ## Usage
 
@@ -11,9 +12,8 @@ This project exercises closer in the [aautil repository][1].
     ```
 
 2. Go to [http://localhost:8000][3] in your browser.
-And be sure to open the js console. 
 
-[1]: https://github.com/aatree/aautil#closer
+[1]: https://github.com/aatree/aautil#dewdrop
 [2]: https://hoplon.io
 [3]: http://localhost:8000
 

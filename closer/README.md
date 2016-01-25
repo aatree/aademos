@@ -1,4 +1,4 @@
-# closer
+# closer demo
 
 This project exercises closer in the [aautil repository][1].
 
