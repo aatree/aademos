@@ -2,16 +2,15 @@
       (:require [aautil.dewdrop :as lens]))
 
 (set! cljs.core/*print-fn* #(.log js/console %))
-(println "start")
 
 (defc composite-data {"A" "Apple" "B" "Boy"})
 (defc lens-key "A")
 
-(def keyed-lens (lens/key-atom-lens lens-key))
+(def keyed-lens (lens/atom-key-lens lens-key))
 
-(defn revalue [d _] (lens/lderef keyed-lens d))
+(defn revalue [d _] (lens/lget keyed-lens d))
 (defn reup [item]
-  (reset! composite-data (lens/lreset! keyed-lens @composite-data item)))
+  (lens/lreset! keyed-lens composite-data item))
 
 (defc= value
        (revalue composite-data lens-key)
@@ -33,6 +32,5 @@
          :type "text"
          :value value
          :keyup #(reset! value @%)))
-    (p (text (str "value: " value)))
     (p (a :href
           "https://github.com/aatree/aademos/tree/master/lens" "Source code"))))
