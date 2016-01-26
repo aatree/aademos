@@ -9,12 +9,10 @@
 (def keyed-lens (lens/atom-key-lens lens-key))
 
 (defn revalue [d _] (lens/lget keyed-lens d))
-(defn reup [item]
-  (lens/lreset! keyed-lens composite-data item))
 
 (defc= value
        (revalue composite-data lens-key)
-       reup)
+       (fn [item] (lens/lreset! keyed-lens composite-data item)))
 
 (html
   (head
