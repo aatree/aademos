@@ -10,8 +10,7 @@
                   [org.clojure/clojure                       "1.8.0"]
                   [org.clojure/clojurescript                 "1.7.228"]
                   [tailrecursion/boot-jetty                  "0.1.3"]
-                  [aatree/aautil                             "0.0.3"]
-]
+                  [aatree/aautil                             "0.0.3"]]
   :source-paths   #{"src/hl"}
   :resource-paths #{"assets" "dev-resources"})
 

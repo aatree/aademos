@@ -1,11 +1,38 @@
 (page "index.html"
       (:require [aautil.dewdrop :as lens]))
 
+(set! cljs.core/*print-fn* #(.log js/console %))
+(println "start")
+
+(defc composite-data {"A" "Apple" "B" "Boy"})
+(defc lens-key "A")
+
+(def keyed-lens (lens/key-atom-lens lens-key))
+
+(defn revalue [d _] (lens/lderef keyed-lens d))
+(defn reup [item]
+  (reset! composite-data (lens/lreset! keyed-lens @composite-data item)))
+
+(defc= value
+       (revalue composite-data lens-key)
+       reup)
+
 (html
   (head
     (html-meta :charset "UTF-8")
     (title "AATree • Lens"))
   (body
-    (p (text "Be sure to open the js console."))
+    (p (text "data: ~{composite-data}"))
+    (p (text "key: ")
+       (input
+         :type "text"
+         :value lens-key
+         :keyup #(reset! lens-key @%)))
+    (p (text "value: ")
+       (input
+         :type "text"
+         :value value
+         :keyup #(reset! value @%)))
+    (p (text (str "value: " value)))
     (p (a :href
           "https://github.com/aatree/aademos/tree/master/lens" "Source code"))))
