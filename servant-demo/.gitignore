@@ -4,3 +4,6 @@ out/
 .nrepl-*
 .idea/
 *.iml
+main.js
+main.js.map
+repl/
