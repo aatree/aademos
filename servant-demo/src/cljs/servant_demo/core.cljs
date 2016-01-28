@@ -1,4 +1,4 @@
-(ns servant.demo
+(ns servant-demo.core
   (:require 
             [cljs.core.async :refer [chan close! timeout put!]]
             [servant.core :as servant]
