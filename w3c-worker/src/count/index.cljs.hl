@@ -1,0 +1,13 @@
+(page "index.html")
+
+(set! cljs.core/*print-fn* #(.log js/console %))
+
+(defc counter)
+
+(html
+  (head
+    (html-meta :charset "UTF-8")
+    (title "w3c-worker"))
+  (body
+    (p (text "Count numbers: ~{counter}"))
+    ))
