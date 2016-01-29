@@ -1,7 +1,7 @@
 # servant-demo
 
 A simple demo of the [Servant Library](https://github.com/MarcoPolo/Servant)
-Adopted from MarcoPolo's own demo to use boot.
+adopted from MarcoPolo's own demo to use boot.
 
 ## Usage
 
