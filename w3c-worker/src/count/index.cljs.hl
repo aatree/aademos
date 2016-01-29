@@ -7,7 +7,7 @@
 
 (defn start-worker []
   (if (not @w)
-    (reset! w (js/Worker. "demo_workers.js"))
+    (reset! w (js/Worker. "worker.js"))
     (println "already exists!"))
   (set! (.-onmessage @w) #(reset! counter (.-data %))))
 
