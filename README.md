@@ -14,5 +14,5 @@ Integrates [dewdrop](https://github.com/aatree/aautil#dewdrop) with
 A simple demo of the [Servant Library](https://github.com/MarcoPolo/Servant)
 adopted from MarcoPolo's own demo to use boot.
 1. [w3c-worker demo](https://github.com/aatree/aademos/tree/master/w3c-worker) -
-an adoption of the 
+An adoption of the 
 [w3c schools webworker example](http://www.w3schools.com/html/html5_webworkers.asp).
