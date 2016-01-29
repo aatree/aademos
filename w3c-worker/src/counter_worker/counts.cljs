@@ -4,8 +4,8 @@
 
 (defn timed-count []
   (swap! i + 1)
-  (.postMessage js/Worker @i)
-  (.setTimeout js/WindowTimers timed-count 500))
+  (.postMessage js/self @i)
+  (.setTimeout js/self timed-count 500))
 
 (defn main []
   (timed-count))

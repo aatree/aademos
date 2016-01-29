@@ -10,8 +10,7 @@
                   [org.clojure/clojure                       "1.8.0"]
                   [org.clojure/clojurescript                 "1.7.228"]
                   [tailrecursion/boot-jetty                  "0.1.3"]]
-  :source-paths   #{"src"}
-  :resource-paths #{"assets"})
+  :source-paths   #{"src"})
 
 (require
   '[adzerk.boot-cljs         :refer [cljs]]
@@ -27,5 +26,5 @@
     (watch)
     (speak)
     (hoplon)
-    (cljs)
+    (cljs :optimizations :simple)
     (serve :port 9000)))
