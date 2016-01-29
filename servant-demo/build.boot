@@ -11,7 +11,8 @@
                   [org.clojure/core.async                    "0.2.374"]
                   [servant                                   "0.1.4"]
                   ]
-  :source-paths   #{"src/cljs"})
+  :source-paths   #{"src/cljs"}
+  :resource-paths #{"assets"})
 
 (require
   '[adzerk.boot-cljs         :refer [cljs]]
@@ -25,8 +26,8 @@
   (comp
     (watch)
     (speak)
-    (reload)
+;    (reload)
     (cljs-repl)
-    (cljs)
-    (show :fileset true)
+    (cljs :optimizations :simple)
+;    (show :fileset true)
     (serve :port 9000)))
