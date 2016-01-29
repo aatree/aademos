@@ -2,7 +2,7 @@
 
 (set! cljs.core/*print-fn* #(.log js/console %))
 
-(defc counter)
+(defc counter 1)
 
 (html
   (head
