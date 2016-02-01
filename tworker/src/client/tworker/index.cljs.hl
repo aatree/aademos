@@ -3,3 +3,15 @@
         [aaworker.client-macros :refer [mklocal]])
       (:require
         [aaworker.lpc]))
+
+(set! cljs.core/*print-fn* #(.log js/console %))
+
+(println "client start")
+
+(def w (atom (js/Worker. "worker.js")))
+
+(println @w)
+
+(set! (.-onmessage @w) #(println (.-data %)))
+
+(.postMessage @w "Hi!")

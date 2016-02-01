@@ -26,8 +26,8 @@
     (watch)
     (speak)
     (hoplon)
-    (reload)
-    (cljs-repl)
+;    (reload)
+;    (cljs-repl)
     (cljs :optimizations :simple)
     (serve :port 8000)))
 
