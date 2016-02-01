@@ -1,0 +1,5 @@
+(page "index.html"
+      (:require-macros
+        [aaworker.client-macros :refer [mklocal]])
+      (:require
+        [aaworker.lpc]))
