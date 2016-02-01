@@ -16,3 +16,6 @@ adopted from MarcoPolo's own demo to use boot.
 1. [w3c-worker demo](https://github.com/aatree/aademos/tree/master/w3c-worker) -
 An adoption of the 
 [w3c schools webworker example](http://www.w3schools.com/html/html5_webworkers.asp).
+1. [tworker](https://github.com/aatree/aademos/tree/master/tworker) -
+Exercises [aaworker](https://github.com/aatree/aaworker),
+an extensible web worker integrated with hoplon.
