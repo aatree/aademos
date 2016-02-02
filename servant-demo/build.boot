@@ -30,4 +30,4 @@
     (cljs-repl)
     (cljs :optimizations :simple)
 ;    (show :fileset true)
-    (serve :port 9000)))
+    (serve :port 9000 :init-params {"org.eclipse.jetty.servlet.Default.useFileMappedBuffer" "false"})))
