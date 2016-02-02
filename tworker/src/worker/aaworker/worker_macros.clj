@@ -1,4 +1,4 @@
- (ns aaworker.worker-macros)
+(ns aaworker.worker-macros)
 
 (defmacro deflpc [fn-sym args & body]
   `(do

@@ -14,11 +14,6 @@
 
 (println (keys @api/worker-fn-map))
 
-(defn process-message [event]
-  (let [data (.-data event)]
-    (println data)
-    (.postMessage js/self "Ho!")))
-
 (defn main []
   (println "worker start")
-  (set! (.-onmessage js/self) process-message))
+  (api/process-requests))

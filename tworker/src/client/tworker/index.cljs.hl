@@ -1,8 +1,5 @@
 (page "index.html"
-;      (:require-macros
-;        [aaworker.client-macros :refer [mklocal]])
-      (:require
-        [aaworker.lpc]))
+      (:require [aaworker.lpc :as lpc]))
 
 (set! cljs.core/*print-fn* #(.log js/console %))
 
