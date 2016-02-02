@@ -29,6 +29,7 @@
 ;    (reload)
 ;    (cljs-repl)
     (cljs :optimizations :simple)
+;    (show :fileset true)
     (serve :port 8000)))
 
 (deftask prod

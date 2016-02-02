@@ -1,6 +1,6 @@
 (page "index.html"
-      (:require-macros
-        [aaworker.client-macros :refer [mklocal]])
+;      (:require-macros
+;        [aaworker.client-macros :refer [mklocal]])
       (:require
         [aaworker.lpc]))
 
@@ -12,6 +12,6 @@
 
 (println @w)
 
-(set! (.-onmessage @w) #(println (.-data %)))
+(set! (.-onmessage @w) #(println "from worker" (.-data %)))
 
 (.postMessage @w "Hi!")
