@@ -84,4 +84,3 @@
 (if (servant/webworker?)
   (worker/bootstrap)
   (set! (.-onload js/window) window-load))
-
