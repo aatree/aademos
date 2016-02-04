@@ -30,7 +30,7 @@
 ;    (cljs-repl)
     (cljs :optimizations :simple)
 ;    (show :fileset true)
-    (serve :port 8000)))
+    (serve :port 8000 :init-params {"org.eclipse.jetty.servlet.Default.useFileMappedBuffer" "false"})))
 
 (deftask prod
   "Build for production deployment."
