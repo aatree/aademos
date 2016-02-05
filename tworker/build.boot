@@ -26,7 +26,7 @@
     (watch)
     (speak)
     (hoplon)
-    (reload)
+;    (reload)
 ;    (cljs-repl)
     (cljs :optimizations :simple)
 ;    (show :fileset true)

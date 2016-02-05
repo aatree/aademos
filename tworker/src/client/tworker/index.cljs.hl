@@ -6,6 +6,8 @@
 (println "client start")
 
 (lpc/new-worker "worker.js")
+(def click (lpc/mklocal 'click "worker.js" nil nil nil))
 
 (println @lpc/worker-map)
 
+(click)
