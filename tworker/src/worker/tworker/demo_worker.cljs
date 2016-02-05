@@ -10,8 +10,7 @@
 
 (deflpc click []
         (swap! clicks + 1)
-        @clicks
-        (throw "Oh?"))
+        @clicks)
 
 (defn main []
   (api/process-requests))

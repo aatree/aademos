@@ -8,11 +8,12 @@
 (defc loading nil)
 
 (def clear-error! #(reset! error nil))
+(defc= loading? (seq loading))
 
 (lpc/new-worker "worker.js")
 (def click (lpc/mklocal 'click "worker.js" state error loading))
 
-(click)
+(defn click-it [] (click))
 
 (html
   (head
@@ -23,4 +24,11 @@
       :click clear-error!
       :slide-toggle error
       :css {:display "none"}
-      (text "~{error}"))))
+      (text "~{error}"))
+    (div
+      :id "loading"
+      :fade-toggle loading?
+      :css {:display "none"}
+      "loading...")
+    (p state)
+    (button :click click-it "Click!")))

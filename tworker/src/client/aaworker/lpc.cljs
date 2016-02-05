@@ -26,7 +26,7 @@
   (register-responder file-name fn-name [state error loading])
   (fn [& args]
     (reset! error nil)
-    (reset! loading "Sending request to worker ~file-name.")
+    (reset! loading (str "Sending " fn-name " request to worker " file-name "."))
     (let [msg [(keyword fn-name)]
           msg (if args
                 (conj msg args)
