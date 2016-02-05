@@ -3,11 +3,24 @@
 
 (set! cljs.core/*print-fn* #(.log js/console %))
 
-(println "client start")
+(defc state nil)
+(defc error nil)
+(defc loading nil)
+
+(def clear-error! #(reset! error nil))
 
 (lpc/new-worker "worker.js")
-(def click (lpc/mklocal 'click "worker.js" nil nil nil))
-
-(println @lpc/worker-map)
+(def click (lpc/mklocal 'click "worker.js" state error loading))
 
 (click)
+
+(html
+  (head
+    (title "tworker demo"))
+  (body
+    (div
+      :id "error"
+      :click clear-error!
+      :slide-toggle error
+      :css {:display "none"}
+      (text "~{error}"))))

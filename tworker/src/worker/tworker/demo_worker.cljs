@@ -11,11 +11,7 @@
 (deflpc click []
         (swap! clicks + 1)
         @clicks
-        (throw "say, what?")
-        )
-
-(println (keys @api/worker-fn-map))
+        (throw "Oh?"))
 
 (defn main []
-  (println "worker start")
   (api/process-requests))

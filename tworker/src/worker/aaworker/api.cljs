@@ -12,9 +12,7 @@
         args (rest data)]
     (try
       (let [fn (fn-key @worker-fn-map)
-            _ (println "doit")
             rv (apply fn args)
-            _ (println "done did it")
             msg (prn-str [fn-key true rv])]
         (.postMessage js/self msg))
       (catch :default e
