@@ -5,10 +5,7 @@
 
 (println "client start")
 
-(def w (atom (js/Worker. "worker.js")))
+(lpc/new-worker "worker.js")
 
-(println @w)
+(println @lpc/worker-map)
 
-(set! (.-onmessage @w) #(println "from worker" (.-data %)))
-
-(.postMessage @w "Hi!")

@@ -12,8 +12,9 @@
         (swap! clicks + 1)
         @clicks)
 
-(println (keys @api/worker-fn-map))
+;(println (keys @api/worker-fn-map))
 
 (defn main []
   (println "worker start")
-  (api/process-requests))
+  ;(api/process-requests)
+  )
