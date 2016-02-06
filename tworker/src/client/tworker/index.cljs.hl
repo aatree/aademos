@@ -3,7 +3,7 @@
 
 (set! cljs.core/*print-fn* #(.log js/console %))
 
-(defc state nil)
+(defc state 0)
 (defc error nil)
 (defc loading nil)
 
@@ -25,10 +25,6 @@
       :slide-toggle error
       :css {:display "none"}
       (text "~{error}"))
-    (div
-      :id "loading"
-      :fade-toggle loading?
-      :css {:display "none"}
-      "loading...")
-    (p state)
-    (button :click click-it "Click!")))
+    (p state
+       (text " ")
+       (button :click click-it "Click!"))))
