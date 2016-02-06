@@ -1,13 +1,15 @@
 (ns aaworker.api
-  (:require [cljs.reader :refer [read-string]]))
+  (:require [cljs.core.async :refer [chan close! timeout put!]]
+            [cljs.reader :refer [read-string]])
+  (:require-macros [cljs.core.async.macros :as m :refer [go go-loop]]))
 
 (def worker-fn-map (atom {}))
 
 (defn register-fn [fn-name f]
   (swap! worker-fn-map assoc (keyword fn-name) f))
 
-(defn process-message [event]
-  (let [data (read-string (.-data event))
+(defn process-request [data]
+  (let [data (read-string data)
         fn-key (first data)
         args (rest data)]
     (try
@@ -19,4 +21,11 @@
         (.postMessage js/self (prn-str [fn-key false e]))))))
 
 (defn process-requests []
-  (set! (.-onmessage js/self) process-message))
+  (let [requests (chan 1)]
+    (set! (.-onmessage js/self)
+          (fn [event]
+            (let [data (.-data event)]
+              (put! requests data))))
+    (go-loop []
+             (process-request (<! requests))
+             (recur))))
