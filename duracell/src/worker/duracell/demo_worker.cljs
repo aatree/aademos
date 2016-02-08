@@ -20,4 +20,4 @@
               @clicks))))
 
 (defn main []
-  (dc/start))
+  (dc/start "myDB1"))
