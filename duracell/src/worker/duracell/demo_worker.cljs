@@ -2,7 +2,8 @@
   (:require-macros
     [aaworker.worker-macros :refer [deflpc!]])
   (:require
-    [aaworker.api :as api]))
+    [aaworker.api :as api]
+    [dcells.dc-client :as dc]))
 
 (set! cljs.core/*print-fn* #(.log js/console %))
 
@@ -19,4 +20,4 @@
               @clicks))))
 
 (defn main []
-  (api/process-requests))
+  (dc/start))
