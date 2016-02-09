@@ -1,10 +1,20 @@
-(ns dcells.dc-client
-  (:require-macros
-    [aaworker.worker-macros :refer [deflpc!]])
+(ns dcells.dc-worker
   (:require
     [aaworker.api :as api]))
 
 (def db (atom nil))
+
+(defn load-cell [success failure cell-name]
+  (let [request (-> @db
+                    (.transaction "cells")
+                    (.objectStore "cells")
+                    (.get cell-name))]
+    (set! (.-onerror request)
+          (fn [event]
+            (failure event)))
+    (set! (.-onsuccess request)
+          (fn [_]
+            (success (.-result request))))))
 
 (defn start [databaseName]
   (let [indexedDB (.-indexedDB js/self)

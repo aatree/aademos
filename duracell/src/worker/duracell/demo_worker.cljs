@@ -1,23 +1,14 @@
 (ns duracell.demo-worker
   (:require-macros
-    [aaworker.worker-macros :refer [deflpc!]])
+    [aaworker.worker-macros :refer [deflpc! deflapc!]])
   (:require
     [aaworker.api :as api]
-    [dcells.dc-client :as dc]))
+    [dcells.dc-worker :as dc]))
 
 (set! cljs.core/*print-fn* #(.log js/console %))
 
-(def clicks (atom 0))
-
-(deflpc! click []
-        (if (< 2 @clicks)
-          (throw "too many clicks!")
-          (do
-            (if (= 2 @clicks)
-              (api/send-notice :alert "Enough clicks already!"))
-            (do
-              (swap! clicks + 1)
-              @clicks))))
+(deflapc! load-txt []
+          (dc/load-cell success failure "txt"))
 
 (defn main []
   (dc/start "myDB1"))

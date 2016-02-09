@@ -10,7 +10,7 @@
                   [org.clojure/clojure                       "1.8.0"]
                   [org.clojure/clojurescript                 "1.7.228"]
                   [tailrecursion/boot-jetty                  "0.1.3"]
-                  [aatree/aaworker                           "0.1.0"]]
+                  [aatree/aaworker                           "0.1.1"]]
   :source-paths   #{"src/client" "src/worker"})
 
 (require
@@ -30,6 +30,7 @@
 ;    (reload)
 ;    (cljs-repl)
     (cljs :optimizations :simple)
+    (target)
 ;    (show :fileset true)
     (serve :port 8000 :init-params {"org.eclipse.jetty.servlet.Default.useFileMappedBuffer" "false"})))
 

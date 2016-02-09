@@ -3,17 +3,21 @@
 
 (set! cljs.core/*print-fn* #(.log js/console %))
 
-(defc state 0)
+(defc state "unknown")
 (defc error nil)
 (defc loading nil)
 
 (def clear-error! #(reset! error nil))
 (defc= loading? (seq loading))
 
-(lpc/new-worker! "worker.js")
-(def click (lpc/mklocal! 'click "worker.js" state error loading))
+(def file-name "worker.js")
 
-(defn click-it [] (click))
+(lpc/new-worker! file-name)
+(def load-txt (lpc/mklocal! 'load-txt file-name state error loading))
+
+(lpc/register-notice-processor! file-name :ready
+                            (fn []
+                              (load-txt)))
 
 (html
   (head
@@ -25,6 +29,4 @@
       :slide-toggle error
       :css {:display "none"}
       (text "~{error}"))
-    (p state
-       (text " ")
-       (button :click click-it "Click!"))))
+    (p state)))
