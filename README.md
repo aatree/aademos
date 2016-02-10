@@ -19,3 +19,6 @@ An adoption of the
 1. [tworker](https://github.com/aatree/aademos/tree/master/tworker) -
 Exercises [aaworker](https://github.com/aatree/aaworker),
 an extensible web worker integrated with hoplon.
+1. [duracell](https://github.com/aatree/aademos/tree/master/duracell) -
+Exercises [durable-cells]((https://github.com/aatree/durable-cells),
+which uses IndexedDB to persist Hoplon cells.
