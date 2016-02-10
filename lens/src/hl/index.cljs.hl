@@ -26,7 +26,7 @@
          :type "text"
          :value lens-key
          :keyup #(reset! lens-key @%)))
-    (p (text "valuesss: ")
+    (p (text "values: ")
        (input
          :type "text"
          :value value

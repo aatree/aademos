@@ -39,4 +39,7 @@
       :slide-toggle error
       :css {:display "none"}
       (text "~{error}"))
-    (p txt)))
+    (p (input
+         :type "text"
+         :value txt
+         :keyup #(reset! txt @%)))))
