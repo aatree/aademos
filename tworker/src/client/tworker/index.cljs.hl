@@ -3,6 +3,13 @@
 
 (set! cljs.core/*print-fn* #(.log js/console %))
 
+(def worker-file "worker.js")
+(lpc/new-worker! worker-file)
+(defc ready false)
+(lpc/register-notice-processor! worker-file :ready
+                                (fn []
+                                  (reset! ready true)))
+
 (defc state 0)
 (defc error nil)
 (defc loading nil)
@@ -10,15 +17,14 @@
 (def clear-error! #(reset! error nil))
 (defc= loading? (seq loading))
 
-(lpc/new-worker! "worker.js")
-(def click (lpc/mklocal! 'click "worker.js" state error loading))
+(def click (lpc/mklocal! 'click worker-file state error loading))
 
 (defn click-it [] (click))
 
 (html
   (head
     (title "tworker demo"))
-  (body
+  (body :css {:display "none"} :toggle ready
     (div
       :id "error"
       :click clear-error!

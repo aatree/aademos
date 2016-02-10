@@ -11,6 +11,7 @@
                   [org.clojure/clojurescript                 "1.7.228"]
                   [tailrecursion/boot-jetty                  "0.1.3"]
                   [aatree/aaworker                           "0.1.1"]]
+  :resource-paths #{"assets"}
   :source-paths   #{"src/client" "src/worker"})
 
 (require
