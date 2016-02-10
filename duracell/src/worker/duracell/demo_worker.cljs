@@ -3,7 +3,7 @@
     [aaworker.worker-macros :refer [deflpc! deflapc!]])
   (:require
     [aaworker.api :as api]
-    [dcells.dc-worker :as dc]))
+    [durable-cells.core :as dc]))
 
 (set! cljs.core/*print-fn* #(.log js/console %))
 
