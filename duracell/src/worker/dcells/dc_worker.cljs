@@ -9,9 +9,20 @@
                     (.transaction "cells")
                     (.objectStore "cells")
                     (.get cell-name))]
-    (set! (.-onerror request)
-          (fn [event]
-            (failure event)))
+    (set! (.-onerror request) failure)
+    (set! (.-onsuccess request)
+          (fn [_]
+            (let [result (.-result request)]
+              (if result
+                (success (.-first result))
+                (success nil)))))))
+
+(defn save-cell [success failure cell-name value]
+  (let [request (-> @db
+                    (.transaction "cells" "readwrite")
+                    (.objectStore "cells")
+                    (.put value cell-name))]
+    (set! (.-onerror request) failure)
     (set! (.-onsuccess request)
           (fn [_]
             (success (.-result request))))))

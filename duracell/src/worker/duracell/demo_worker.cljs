@@ -10,5 +10,8 @@
 (deflapc! load-txt []
           (dc/load-cell success failure "txt"))
 
+(deflapc! save-txt [value]
+          (dc/save-cell success failure "txt" value))
+
 (defn main []
   (dc/start "myDB1"))
