@@ -10,8 +10,8 @@
                   [org.clojure/clojure                       "1.8.0"]
                   [org.clojure/clojurescript                 "1.7.228"]
                   [tailrecursion/boot-jetty                  "0.1.3"]
-                  [aatree/aaworker                           "0.1.1"]
-                  [aatree/durable-cells                      "0.0.1"]]
+                  [aatree/aaworker                           "0.1.2"]
+                  [aatree/durable-cells                      "0.1.0"]]
   :resource-paths #{"assets"}
   :source-paths   #{"src/client" "src/worker"})
 
