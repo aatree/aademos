@@ -7,15 +7,14 @@
 
 (defc ready false)
 
-(defdcell! txt nil)
-
 (def clear-error! #(reset! error nil))
 (defc= loading? (seq loading))
 
 (open-durable-cells!
                      (fn []
-                       (load-txt "txt")
                        (reset! ready true)))
+
+(defdcell! txt nil)
 
 (html
   (head
