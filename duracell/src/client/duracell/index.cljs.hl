@@ -1,15 +1,13 @@
 (page "index.html"
-      (:require [durable-cells.core :refer [open-durable-cells! error loading]]))
+      (:require [durable-cells.core :refer [open-durable-cells! error loading ready]]))
 
 (set! cljs.core/*print-fn* #(.log js/console %))
-
-(defc ready false)
 
 (def clear-error! #(reset! error nil))
 (defc= loading? (seq loading))
 (defc txt nil)
 
-(open-durable-cells! {"txt" txt} ready)
+(open-durable-cells! {"txt" txt})
 
 (html
   (head
