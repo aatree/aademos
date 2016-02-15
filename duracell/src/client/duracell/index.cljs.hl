@@ -11,25 +11,25 @@
 (defc= loading? (seq loading))
 
 (open-durable-cells!
-                     (fn []
-                       (reset! ready true)))
+  (fn []
+    (defdcell! txt nil)
 
-(defdcell! txt nil)
+    (html
+      (head
+        (title "duracell demo")
+        (link :href "main.css" :rel "stylesheet"))
+      (body :css {:display "none"} :toggle ready
+            (div
+              :id "error"
+              :click clear-error!
+              :slide-toggle error
+              :css {:display "none"}
+              (text "~{error}"))
+            (h2 (text (str "Local Storage Demo " ~txt)))
+            (p (input
+                 :type "text"
+                 :value txt
+                 :keyup #(reset! txt @%)))
+            (p (text "Type something and then refresh the page--nothing is lost."))))
 
-(html
-  (head
-    (title "duracell demo")
-    (link :href "main.css" :rel "stylesheet"))
-  (body :css {:display "none"} :toggle ready
-        (div
-          :id "error"
-          :click clear-error!
-          :slide-toggle error
-          :css {:display "none"}
-          (text "~{error}"))
-        (h2 (text "Local Storage Demo"))
-        (p (input
-             :type "text"
-             :value txt
-             :keyup #(reset! txt @%)))
-        (p (text "Type something and then refresh the page--nothing is lost."))))
+    (reset! ready true)))
