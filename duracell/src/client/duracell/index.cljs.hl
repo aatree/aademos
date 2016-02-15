@@ -1,6 +1,4 @@
 (page "index.html"
-      (:require-macros
-        [durable-cells.client-macros :refer [defdcell!]])
       (:require [durable-cells.core :refer [open-durable-cells! error loading]]))
 
 (set! cljs.core/*print-fn* #(.log js/console %))
@@ -9,27 +7,24 @@
 
 (def clear-error! #(reset! error nil))
 (defc= loading? (seq loading))
+(defc txt nil)
 
-(open-durable-cells!
-  (fn []
-    (defdcell! txt nil)
+(open-durable-cells! {"txt" txt} ready)
 
-    (html
-      (head
-        (title "duracell demo")
-        (link :href "main.css" :rel "stylesheet"))
-      (body :css {:display "none"} :toggle ready
-            (div
-              :id "error"
-              :click clear-error!
-              :slide-toggle error
-              :css {:display "none"}
-              (text "~{error}"))
-            (h2 (text (str "Local Storage Demo " ~txt)))
-            (p (input
-                 :type "text"
-                 :value txt
-                 :keyup #(reset! txt @%)))
-            (p (text "Type something and then refresh the page--nothing is lost."))))
-
-    (reset! ready true)))
+(html
+  (head
+    (title "duracell demo")
+    (link :href "main.css" :rel "stylesheet"))
+  (body :css {:display "none"} :toggle ready
+        (div
+          :id "error"
+          :click clear-error!
+          :slide-toggle error
+          :css {:display "none"}
+          (text "~{error}"))
+        (h2 (text (str "Local Storage Demo")))
+        (p (input
+             :type "text"
+             :value txt
+             :keyup #(reset! txt @%)))
+        (p (text "Type something and then refresh the page--nothing is lost."))))
