@@ -10,8 +10,7 @@
 
 (html
   (head
-    (title "duracell demo")
-    (link :href "main.css" :rel "stylesheet"))
+    (title "duracell demo"))
   (body :css {:display "none"} :toggle ready
         (div
           :id "error"
@@ -19,7 +18,7 @@
           :slide-toggle error
           :css {:display "none"}
           (text "~{error}"))
-        (h2 (text (str "Local Storage Demo")))
+        (h2 (text "IndexedDB Demo: Duracell"))
         (p (input
              :type "text"
              :value txt
