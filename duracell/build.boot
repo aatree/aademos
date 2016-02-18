@@ -4,25 +4,25 @@
                   [hoplon/hoplon                             "6.0.0-alpha13"]
                   [org.clojure/clojure                       "1.8.0"]
                   [org.clojure/clojurescript                 "1.7.228"]
-                  [tailrecursion/boot-jetty                  "0.1.3"]
+                  [pandeiro/boot-http                        "0.7.2"]
                   [aatree/durable-cells                      "0.1.0"]]
   :source-paths   #{"src/client" "src/worker"})
 
 (require
   '[adzerk.boot-cljs         :refer [cljs]]
   '[hoplon.boot-hoplon       :refer [hoplon prerender]]
-  '[tailrecursion.boot-jetty :refer [serve]])
+  '[pandeiro.boot-http       :refer [serve]])
 
 (deftask dev
   "Build for local development."
   []
   (comp
+    (serve :port 8000
+           :init 'duracell.strap/jetty-init)
     (watch)
     (speak)
     (hoplon)
-    (cljs :optimizations :simple)
-    (target)
-    (serve :port 8000 :init-params {"org.eclipse.jetty.servlet.Default.useFileMappedBuffer" "false"})))
+    (cljs :optimizations :simple)))
 
 (deftask prod
   "Build for production deployment."
