@@ -5,7 +5,7 @@
                   [org.clojure/clojure                       "1.8.0"]
                   [org.clojure/clojurescript                 "1.7.228"]
                   [pandeiro/boot-http                        "0.7.2"]
-                  [aatree/durable-cells                      "0.1.0"]]
+                  [aatree/durable-cells                      "0.1.1"]]
   :source-paths   #{"src/client" "src/worker"})
 
 (require
