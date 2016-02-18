@@ -22,7 +22,7 @@
     (watch)
     (speak)
     (hoplon)
-    (cljs :optimizations :simple)))
+    (cljs :optimizations :none)))
 
 (deftask prod
   "Build for production deployment."
