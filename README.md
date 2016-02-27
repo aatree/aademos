@@ -22,3 +22,5 @@ an extensible web worker integrated with hoplon.
 1. [duracell](https://github.com/aatree/aademos/tree/master/duracell) -
 Exercises [durable-cells](https://github.com/aatree/durable-cells),
 which uses IndexedDB to persist Hoplon cells.
+1. [byte-array](https://github.com/aatree/aademos/tree/master/byte-array) -
+Exercises [bytes](https://github.com/aatree/aautil#bytes).
