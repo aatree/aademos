@@ -9,9 +9,13 @@
 (defn get-byte [a i]
   (aget a i))
 
-(defn baeq
+(defn bytes-equal
   ([a1 a2]
-   (baeq a1 a2 (alength a1)))
+   (let [l1 (alength a1)
+         l2 (alength a2)]
+     (if (= l1 l2)
+       (bytes-equal a1 a2 l1)
+       false)))
   ([a1 a2 i]
    (if (= i 0)
      true

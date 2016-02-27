@@ -11,7 +11,7 @@
 (defn get-byte [^"[B" a i]
   (aget a i))
 
-(defn baeq [^"[B" a1 ^"[B" a2]
+(defn bytes-equal [^"[B" a1 ^"[B" a2]
   (java.util.Arrays/equals a1 a2))
 
 (defn vec-bytes [a]
