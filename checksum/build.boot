@@ -7,7 +7,7 @@
                   [pandeiro/boot-http                        "0.7.3"]
                   [adzerk/boot-test                          "1.1.1"]]
   :resource-paths #{"resources"}
-  :source-paths   #{"test/clj" "test/cljc" "test/cljs" "src/clj" "src/cljc" "src/cljs"})
+  :source-paths   #{"test/clj" "src/clj" "src/cljc" "src/cljs"})
 
 (require
   '[adzerk.boot-cljs         :refer [cljs]]
@@ -20,7 +20,7 @@
    []
    (comp
 ;     (show :fileset true)
-     (run-tests)
+     (run-tests :namespaces '#{checksum.fun-test})
      ))
 
 (deftask dev

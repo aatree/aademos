@@ -4,6 +4,7 @@
 (set! cljs.core/*print-fn* #(.log js/console %))
 
 (println 123)
+
 (games/bingo)
 
 (html

@@ -5,4 +5,5 @@
 (set! *warn-on-reflection* true)
 
 (println 123)
+
 (games/bingo)
