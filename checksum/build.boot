@@ -5,20 +5,14 @@
                   [org.clojure/clojure                       "1.8.0"]
                   [org.clojure/clojurescript                 "1.7.228"]
                   [pandeiro/boot-http                        "0.7.3"]
-                  [adzerk/bootlaces                          "0.1.13"]
                   [adzerk/boot-test                          "1.1.1"]]
-  :source-paths   #{"test/clj" "src/clj"})
+  :source-paths   #{"test/clj" "test/cljc" "test/cljs" "src/clj" "src/cljc" "src/cljs"})
 
 (require
   '[adzerk.boot-cljs         :refer [cljs]]
   '[adzerk.boot-test         :refer :all]
   '[hoplon.boot-hoplon       :refer [hoplon]]
-  '[pandeiro.boot-http       :refer [serve]]
-  '[adzerk.bootlaces            :refer :all])
-
-(def +version+ "0.0.1")
-
-(bootlaces! +version+ :dont-modify-paths? true)
+  '[pandeiro.boot-http       :refer [serve]])
 
 (deftask test-it
    "Setup, compile and run the tests."
@@ -33,7 +27,7 @@
   []
   (comp
     (serve :port 8000
-           :init 'duracell.strap/jetty-init)
+           :init 'checksum.strap/jetty-init)
     (watch)
     (speak)
     (hoplon)
