@@ -21,7 +21,7 @@
    []
    (comp
 ;     (show :fileset true)
-     (run-tests :namespaces '#{checksum.fun-test})
+     (run-tests :namespaces '#{byte-array.fun-test})
      ))
 
 (deftask dev
@@ -29,7 +29,7 @@
   []
   (comp
     (serve :port 8000
-           :init 'checksum.strap/jetty-init)
+           :init 'byte-array.strap/jetty-init)
     (watch)
     (speak)
     (hoplon)

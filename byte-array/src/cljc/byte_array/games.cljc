@@ -1,4 +1,4 @@
-(ns checksum.games
+(ns byte-array.games
   (:require [aautil.bytes :as bytes]))
 
 #?(:clj

@@ -1,0 +1,14 @@
+(page "index.html"
+      (:require [byte-array.games :as games]))
+
+(set! cljs.core/*print-fn* #(.log js/console %))
+
+(println 123)
+
+(games/bingo)
+
+(html
+  (head
+    (title "byte array demo"))
+  (body
+        (p (text "Check the console"))))
