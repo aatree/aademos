@@ -6,6 +6,7 @@
                   [org.clojure/clojurescript                 "1.7.228"]
                   [pandeiro/boot-http                        "0.7.3"]
                   [adzerk/boot-test                          "1.1.1"]]
+  :resource-paths #{"resources"}
   :source-paths   #{"test/clj" "test/cljc" "test/cljs" "src/clj" "src/cljc" "src/cljs"})
 
 (require
@@ -22,7 +23,7 @@
      (run-tests)
      ))
 
-#_(deftask dev
+(deftask dev
   "Build for local development."
   []
   (comp
