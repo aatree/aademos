@@ -1,23 +1,20 @@
 (ns checksum.games
-  (:require [aautil.bytes :as bytes]))
+  (:require [aautil.bytes :as bytes]
+            [aautil.cs256 :as cs256]))
 
 #?(:clj
    (set! *warn-on-reflection* true))
 
 (defn bingo []
-  (println "abc")
+  (def cs1 (cs256/make-cs256))
+  (println (bytes/vec-bytes cs1))
+  (cs256/digest-byte! cs1 -128)
+  (println (bytes/vec-bytes cs1))
+  (cs256/digest-byte! cs1 -128)
+  (println (bytes/vec-bytes cs1))
 
-  (def ba1 (bytes/make-bytes 3))
-  (bytes/set-byte! ba1 1 -3)
-  (println (bytes/get-byte ba1 1))
-  (println (bytes/vec-bytes ba1))
-
-  (def ba2 (bytes/make-bytes 3))
-  (bytes/set-byte! ba2 1 -3)
-  (println (bytes/bytes-equal ba1 ba2))
-
-  (def ba3 (bytes/make-bytes 3))
-  (bytes/set-byte! ba3 2 -3)
-  (println (bytes/bytes-equal ba1 ba3))
-
-  (println (bit-xor 5 6)))
+  (def cs2 (cs256/make-cs256))
+  (def ba (bytes/make-bytes 2))
+  (cs256/digest! cs2 ba)
+  (println (bytes/vec-bytes cs2))
+  (println (bytes/bytes-equal cs1 cs2)))

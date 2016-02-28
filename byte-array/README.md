@@ -13,5 +13,5 @@ This project exercises bytes in the [aautil repository][1].
 2. Go to [http://localhost:8000][3] in your browser.
 And be sure to open the js console. 
 
-[1]: https://github.com/aatree/aautil#aalog
+[1]: https://github.com/aatree/aautil#bytes
 [3]: http://localhost:8000

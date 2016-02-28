@@ -6,7 +6,7 @@
                   [org.clojure/clojurescript                 "1.7.228"]
                   [pandeiro/boot-http                        "0.7.3"]
                   [adzerk/boot-test                          "1.1.1"]
-                  [aatree/aautil                             "0.0.5"]]
+                  [aatree/aautil                             "0.0.6"]]
   :resource-paths #{"resources"}
   :source-paths   #{"test/clj" "src/clj" "src/cljc" "src/cljs"})
 
