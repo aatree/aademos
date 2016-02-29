@@ -4,9 +4,10 @@
                   [hoplon/hoplon                             "6.0.0-alpha13"]
                   [org.clojure/clojure                       "1.8.0"]
                   [org.clojure/clojurescript                 "1.7.228"]
+                  [funcool/octet                             "0.2.0"]
                   [pandeiro/boot-http                        "0.7.3"]
                   [adzerk/boot-test                          "1.1.1"]
-                  [aatree/aautil                             "0.0.6"]]
+                  [aatree/aautil                             "0.0.7"]]
   :resource-paths #{"resources"}
   :source-paths   #{"test/clj" "src/clj" "src/cljc" "src/cljs"})
 
