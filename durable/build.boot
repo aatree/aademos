@@ -17,18 +17,23 @@
   '[hoplon.boot-hoplon       :refer [hoplon]]
   '[pandeiro.boot-http       :refer [serve]])
 
+(task-options!
+  aot {:namespace '#{durable.CountedSequence durable.nodes}})
+
 (deftask test-it
    "Setup, compile and run the tests."
    []
    (comp
+    (aot)
 ;     (show :fileset true)
-     (run-tests :namespaces '#{durable.fun-test})
+     (run-tests :namespaces '#{durable.nodes-test durable.fun-test})
      ))
 
 (deftask dev
   "Build for local development."
   []
   (comp
+    (aot)
     (serve :port 8000
            :init 'durable.strap/jetty-init)
     (watch)
