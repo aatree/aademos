@@ -26,7 +26,7 @@
    (comp
     (aot)
 ;     (show :fileset true)
-     (run-tests :namespaces '#{durable.seq-test})
+     (run-tests :namespaces '#{durable.fun-test})
      ))
 
 (deftask dev

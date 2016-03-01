@@ -1,4 +1,4 @@
-(ns durable.seq-test
+(ns durable.vec-it
   (:require [durable.CountedSequence :refer :all])
   (:import (clojure.lang Counted)
            (java.util Iterator)
@@ -45,15 +45,3 @@
   ([v i]
    (let [it (new-vector-iterator v i)]
      (CountedSequence/create it (xiindex it) identity))))
-
-(def s23 (new-counted-seq [1 2 3] 1))
-(println (count s23))
-(println s23)
-(println (first s23))
-
-(def s3 (next s23))
-(println (count s3))
-(println s3)
-(println (first s3))
-
-(println (next s3))
