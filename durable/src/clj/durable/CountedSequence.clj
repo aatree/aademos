@@ -14,13 +14,13 @@
            (clojure.lang Counted)
            (durable CountedSequence)))
 
+(set! *warn-on-reflection* true)
+
 (defprotocol XIterator
   (^Long xiindex [this])
   (xibumpIndex [this index])
   (xicount [this index])
   (xifetch [this index]))
-
-(set! *warn-on-reflection* true)
 
 (defn -create [iter initialIndex styp]
   (if (< 0 (xicount iter initialIndex))
