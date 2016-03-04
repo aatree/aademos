@@ -74,14 +74,16 @@
   ASeq
   ISeq
   (-first [_] (styp (xifetch iter i)))
-  (-rest [_] (if (> 0 (xicount iter i))
-               (CountedSequence. iter (inc i) styp nil)
-               (list)))
+  (-rest [_]
+    (if (< 0 (xicount iter i))
+      (CountedSequence. iter (inc i) styp nil)
+      (list)))
 
   INext
-  (-next [_] (if (> 0 (xicount iter i))
-               (CountedSequence. iter (inc i) styp nil)
-               nil))
+  (-next [_]
+    (if (< 0 (xicount iter i))
+      (CountedSequence. iter (inc i) styp nil)
+      nil))
 
   ICounted
   (-count [_]
