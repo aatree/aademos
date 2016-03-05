@@ -62,7 +62,7 @@
 
   ISeqable
   (-seq [this]
-    (when (>= 0 (xicount iter i))
+    (when (<= 0 (xicount iter i))
       this))
 
   IMeta
@@ -123,7 +123,7 @@
       (if (pos? c)
         (RSeq. coll (dec c) nil)))))
 
-(es6-iterable IndexedSeq)
+(es6-iterable CountedSequence)
 
 (defn create [iter initialIndex styp]
   (if (< 0 (xicount iter initialIndex))
