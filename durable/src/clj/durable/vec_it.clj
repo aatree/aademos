@@ -1,5 +1,6 @@
 (ns durable.vec-it
-  (:require [durable.CountedSequence :refer :all])
+  (:require [durable.CountedSequence :refer :all]
+            [durable.base :refer :all])
   (:import (clojure.lang Counted)
            (java.util Iterator)
            (durable CountedSequence)))

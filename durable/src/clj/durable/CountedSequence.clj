@@ -10,17 +10,12 @@
     :init init
     :state state
     :methods [^:static [create [java.util.Iterator Long clojure.lang.IFn] Object]])
+  (:require [durable.base :refer :all])
   (:import (java.util Iterator)
            (clojure.lang Counted)
            (durable CountedSequence)))
 
 (set! *warn-on-reflection* true)
-
-(defprotocol XIterator
-  (^Long xiindex [this])
-  (xibumpIndex [this index])
-  (xicount [this index])
-  (xifetch [this index]))
 
 (defn -create [iter initialIndex styp]
   (if (< 0 (xicount iter initialIndex))

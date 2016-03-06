@@ -1,5 +1,6 @@
 (ns durable.nodes
-  (:require [durable.CountedSequence :refer :all])
+  (:require   [durable.base :refer :all]
+              [durable.CountedSequence :refer :all])
   (:import (clojure.lang Counted MapEntry IMapEntry PersistentVector)
            (java.util Iterator Comparator BitSet)
            (durable CountedSequence)
