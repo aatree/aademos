@@ -75,13 +75,13 @@
   ISeq
   (-first [_] (styp (xifetch iter i)))
   (-rest [_]
-    (if (< 0 (xicount iter i))
+    (if (< 1 (xicount iter i))
       (CountedSequence. iter (inc i) styp nil)
       (list)))
 
   INext
   (-next [_]
-    (if (< 0 (xicount iter i))
+    (if (< 1 (xicount iter i))
       (CountedSequence. iter (inc i) styp nil)
       nil))
 
@@ -121,7 +121,11 @@
   (-rseq [coll]
     (let [c (-count coll)]
       (if (pos? c)
-        (RSeq. coll (dec c) nil)))))
+        (RSeq. coll (dec c) nil))))
+
+  IPrintWithWriter
+  (-pr-writer [coll writer opts] (pr-sequential-writer writer pr-writer "(" " " ")" opts coll))
+  )
 
 (es6-iterable CountedSequence)
 

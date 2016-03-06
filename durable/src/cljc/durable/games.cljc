@@ -15,5 +15,4 @@
   (println s3)
   (println (first s3))
 
-  (println (next s3))
-  )
+  (println (next s3)))
