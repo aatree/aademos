@@ -19,11 +19,8 @@
 
 (deftype noded-state [node opts meta])
 
-(definterface INoded
-  (getState []))
-
-(defn ^noded-state get-state [^INoded this]
-  (.getState this))
+(defn ^noded-state get-state [this]
+  (-getState this))
 
 (defn ^INode get-inode [noded]
   (.-node (get-state noded)))

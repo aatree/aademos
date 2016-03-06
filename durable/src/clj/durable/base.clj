@@ -7,3 +7,6 @@
   (xibumpIndex [this index])
   (xicount [this index])
   (xifetch [this index]))
+
+(defprotocol INoded
+  (-getState [this]))
