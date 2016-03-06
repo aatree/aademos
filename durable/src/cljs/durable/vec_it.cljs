@@ -1,5 +1,5 @@
 (ns durable.vec-it
-  (:require [durable.CountedSequence :as cs]))
+  (:require [durable.base :as base]))
 
 (deftype vector-iterator
   [v ^{:volatile-mutable true} ndx]
@@ -9,10 +9,10 @@
     (< ndx (count v)))
   (next [this]
     (let [i ndx]
-      (set! ndx (cs/xibumpIndex this i))
-      (cs/xifetch this i)))
+      (set! ndx (base/xibumpIndex this i))
+      (base/xifetch this i)))
 
-  cs/XIterator
+  base/XIterator
   (xicount [this index]
     (- (count v) index))
   (xiindex [this]
@@ -24,7 +24,7 @@
 
   ICounted
   (-count [this]
-    (cs/xicount this ndx))
+    (base/xicount this ndx))
 )
 
 (defn ^vector-iterator new-vector-iterator
@@ -33,10 +33,10 @@
   ([v i]
    (->vector-iterator v i)))
 
-(defn ^cs/CountedSequence new-counted-seq
+(defn ^base/CountedSequence new-counted-seq
   ([v]
    (let [it (new-vector-iterator v)]
-     (cs/create it (cs/xiindex it) identity)))
+     (base/create it (base/xiindex it) identity)))
   ([v i]
    (let [it (new-vector-iterator v i)]
-     (cs/create it (cs/xiindex it) identity))))
+     (base/create it (base/xiindex it) identity))))

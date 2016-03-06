@@ -1,4 +1,4 @@
-(ns durable.CountedSequence
+(ns durable.base
   (:require-macros
     [cljs.core :refer [es6-iterable]]))
 
