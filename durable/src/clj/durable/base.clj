@@ -17,6 +17,15 @@
   (-setDefaultFactory [this factory])
   (-refineInstance [this inst]))
 
+(defprotocol INode
+  (-newNode [this t2 ^Long level left right ^Long cnt opts])
+  (-getT2 [this opts])
+  (^Long -getLevel [this opts])
+  (-getLeft [this opts])
+  (-getRight [this opts])
+  (^Long -getCnt [this opts])
+  (-getNada [this]))
+
 (defprotocol FlexVector
   (-dropNode [this i])
   (-addNode [this i v]))

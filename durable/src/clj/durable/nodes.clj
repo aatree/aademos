@@ -8,21 +8,12 @@
 
 (set! *warn-on-reflection* true)
 
-(definterface INode
-  (newNode [t2 ^Long level left right ^Long cnt opts])
-  (getT2 [opts])
-  (^Long getLevel [opts])
-  (getLeft [opts])
-  (getRight [opts])
-  (^Long getCnt [opts])
-  (getNada []))
-
 (deftype noded-state [node opts meta])
 
 (defn ^noded-state get-state [this]
   (-getState this))
 
-(defn ^INode get-inode [noded]
+(defn get-inode [noded]
   (.-node (get-state noded)))
 
 (defn get-opts [noded]
@@ -31,76 +22,76 @@
 (defn get-meta [noded]
   (.-meta (get-state noded)))
 
-(defn empty-node? [^INode n]
-  (or (nil? n) (identical? n (.getNada n))))
+(defn empty-node? [n]
+  (or (nil? n) (identical? n (-getNada n))))
 
-(defn last-t2 [^INode this opts]
+(defn last-t2 [this opts]
   (cond
     (empty-node? this)
     nil
-    (empty-node? (.getRight this opts))
-    (.getT2 this opts)
+    (empty-node? (-getRight this opts))
+    (-getT2 this opts)
     :else
-    (recur (.getRight this opts) opts)))
+    (recur (-getRight this opts) opts)))
 
-(defn empty-node [^INode this opts]
+(defn empty-node [this opts]
   (if (empty-node? this)
     this
-    (.getNada this)))
+    (-getNada this)))
 
-(defn ^INode left-node [^INode this opts]
-  (if (empty-node? (.getLeft this opts))
+(defn left-node [this opts]
+  (if (empty-node? (-getLeft this opts))
     (empty-node this opts)
-    (.getLeft this opts)))
+    (-getLeft this opts)))
 
-(defn ^INode right-node [^INode this opts]
-  (if (empty-node? (.getRight this opts))
+(defn right-node [this opts]
+  (if (empty-node? (-getRight this opts))
     (empty-node this opts)
-    (.getRight this opts)))
+    (-getRight this opts)))
 
-(defn ^Long node-count [^INode this opts]
+(defn ^Long node-count [this opts]
   (if (empty-node? this)
     0
-    (.getCnt this opts)))
+    (-getCnt this opts)))
 
-(defn revise [^INode this args opts]
+(defn revise [this args opts]
   (let [m (apply array-map args)
-        t-2 (get m :t2 (.getT2 this opts))
-        ^Long lev (get m :level (.getLevel this opts))
+        t-2 (get m :t2 (-getT2 this opts))
+        ^Long lev (get m :level (-getLevel this opts))
         l (get m :left (left-node this opts))
         r (get m :right (right-node this opts))
         ^Long c (+ 1 (node-count l opts) (node-count r opts))]
-    (if (and (identical? t-2 (.getT2 this opts))
-             (= lev (.getLevel this opts))
+    (if (and (identical? t-2 (-getT2 this opts))
+             (= lev (-getLevel this opts))
              (identical? l (left-node this opts))
              (identical? r (right-node this opts)))
       this
-      (.newNode this t-2 lev l r c opts))))
+      (-newNode this t-2 lev l r c opts))))
 
 (defn skew
-  [^INode this opts]
+  [this opts]
   (cond
     (empty-node? this)
     this
-    (empty-node? (.getLeft this opts))
+    (empty-node? (-getLeft this opts))
     this
-    (= (.getLevel (left-node this opts) opts) (.getLevel this opts))
-    (let [l (.getLeft this opts)]
+    (= (-getLevel (left-node this opts) opts) (-getLevel this opts))
+    (let [l (-getLeft this opts)]
       (revise l [:right (revise this [:left (right-node l opts)] opts)] opts))
     :else
     this))
 
-(defn split [^INode this opts]
+(defn split [this opts]
   (cond
     (empty-node? this)
     this
     (or (empty-node? (right-node this opts))
         (empty-node? (right-node (right-node this opts) opts)))
     this
-    (= (.getLevel this opts) (.getLevel (right-node (right-node this opts) opts) opts))
+    (= (-getLevel this opts) (-getLevel (right-node (right-node this opts) opts) opts))
     (revise (right-node this opts)
-            [:level (+ 1 (.getLevel (right-node this opts) opts))
-             :left (revise this [:right (.getLeft (right-node this opts) opts)] opts)]
+            [:level (+ 1 (-getLevel (right-node this opts) opts))
+             :left (revise this [:right (-getLeft (right-node this opts) opts)] opts)]
             opts)
     :else
     this))
@@ -108,36 +99,36 @@
 (defn predecessor-t2 [this opts]
   (last-t2 (left-node this opts) opts))
 
-(defn decrease-level [^INode this opts]
-  (let [should-be (+ 1 (min (.getLevel (left-node this opts) opts)
-                            (.getLevel (right-node this opts) opts)))]
-    (if (>= should-be (.getLevel this opts))
+(defn decrease-level [this opts]
+  (let [should-be (+ 1 (min (-getLevel (left-node this opts) opts)
+                            (-getLevel (right-node this opts) opts)))]
+    (if (>= should-be (-getLevel this opts))
       this
       (let [rn (right-node this opts)
-            rn (if (>= should-be (.getLevel (right-node this opts) opts))
+            rn (if (>= should-be (-getLevel (right-node this opts) opts))
                  rn
                  (revise rn [:level should-be] opts))]
         (revise this [:right rn :level should-be] opts)))))
 
-(defn nth-t2 [^INode this i opts]
+(defn nth-t2 [this i opts]
   (if (empty-node? this)
     (throw (IndexOutOfBoundsException.))
     (let [l (left-node this opts)
-          p (.getCnt l opts)]
+          p (-getCnt l opts)]
       (cond
         (< i p)
         (nth-t2 l i opts)
         (> i p)
         (nth-t2 (right-node this opts) (- i p 1) opts)
         :else
-        (.getT2 this opts)))))
+        (-getT2 this opts)))))
 
-(defn deln [^INode this i opts]
+(defn deln [this i opts]
   (if (empty-node? this)
     this
     (let [l (left-node this opts)
-          p (.getCnt l opts)]
-      (if (and (= i p) (= 1 (.getLevel this opts)))
+          p (-getCnt l opts)]
+      (if (and (= i p) (= 1 (-getLevel this opts)))
         (right-node this opts)
         (let [t (cond
                   (> i p)
@@ -187,10 +178,10 @@
       (xifetch this i))))
 
 (defn ^counted-iterator new-counted-iterator
-  ([^INode node opts]
-   (->counted-iterator node 0 (.getCnt node opts) opts))
-  ([^INode node i opts]
-   (->counted-iterator node i (.getCnt node opts) opts)))
+  ([node opts]
+   (->counted-iterator node 0 (-getCnt node opts) opts))
+  ([node i opts]
+   (->counted-iterator node i (-getCnt node opts) opts)))
 
 (defn ^CountedSequence new-counted-seq
   ([node opts]
@@ -228,8 +219,8 @@
       (xifetch this i))))
 
 (defn ^counted-reverse-iterator new-counted-reverse-iterator
-  ([^INode node opts]
-   (->counted-reverse-iterator node (- (.getCnt node opts) 1) opts))
+  ([node opts]
+   (->counted-reverse-iterator node (- (-getCnt node opts) 1) opts))
   ([node i opts]
    (->counted-reverse-iterator node i opts)))
 
@@ -241,11 +232,11 @@
    (let [it (new-counted-reverse-iterator node i opts)]
      (CountedSequence/create it (xiindex it) identity))))
 
-(defn vector-add [^INode n v i opts]
+(defn vector-add [n v i opts]
   (if (empty-node? n)
-    (.newNode n v 1 nil nil 1 opts)
+    (-newNode n v 1 nil nil 1 opts)
     (let [l (left-node n opts)
-          p (.getCnt l opts)]
+          p (-getCnt l opts)]
       (split
         (skew
           (if (<= i p)
@@ -254,11 +245,11 @@
           opts)
         opts))))
 
-(defn vector-set [^INode n v i opts]
+(defn vector-set [n v i opts]
   (if (empty-node? n)
-    (.newNode n v 1 nil nil 1 opts)
+    (-newNode n v 1 nil nil 1 opts)
     (let [l (left-node n opts)
-          p (.getCnt l opts)]
+          p (-getCnt l opts)]
       (split
         (skew
           (cond
@@ -271,7 +262,7 @@
           opts)
         opts))))
 
-(defn ^MapEntry get-entry [^INode this opts] (.getT2 this opts))
+(defn ^MapEntry get-entry [this opts] (-getT2 this opts))
 
 (defn key-of [^IMapEntry e] (.getKey e))
 
@@ -290,15 +281,15 @@
         (< c 0)
         (map-index-of (left-node this opts) x opts)
         (= c 0)
-        (.getCnt (left-node this opts) opts)
+        (-getCnt (left-node this opts) opts)
         :else
         (+ 1
-           (.getCnt (left-node this opts) opts)
+           (-getCnt (left-node this opts) opts)
            (map-index-of (right-node this opts) x opts))))))
 
 (defn ^counted-iterator new-map-entry-iterator
-  ([^INode node x opts]
-   (->counted-iterator node (map-index-of node x opts) (.getCnt node opts) opts)))
+  ([node x opts]
+   (->counted-iterator node (map-index-of node x opts) (-getCnt node opts) opts)))
 
 (defn ^CountedSequence new-map-entry-seq
   ([node x opts]
@@ -330,9 +321,9 @@
   (let [it (new-counted-reverse-iterator node opts)]
     (CountedSequence/create it (xiindex it) value-of)))
 
-(defn map-insert [^INode this ^MapEntry t-2 opts]
+(defn map-insert [this ^MapEntry t-2 opts]
   (if (empty-node? this)
-    (.newNode this t-2 1 nil nil 1 opts)
+    (-newNode this t-2 1 nil nil 1 opts)
     (let [c (resource-cmpr this (.getKey t-2) opts)]
       (split (skew (cond
                      (< c 0)
@@ -350,20 +341,20 @@
                                [:t2 (new MapEntry (.getKey (get-entry this opts)) (.getValue t-2))]
                                opts))) opts) opts))))
 
-(defn map-get-t2 [^INode this x opts]
+(defn map-get-t2 [this x opts]
   (if (empty-node? this)
     nil
     (let [c (resource-cmpr this x opts)]
       (cond
-        (zero? c) (.getT2 this opts)
+        (zero? c) (-getT2 this opts)
         (> c 0) (map-get-t2 (right-node this opts) x opts)
         :else (map-get-t2 (left-node this opts) x opts)))))
 
-(defn map-del [^INode this x opts]
+(defn map-del [this x opts]
   (if (empty-node? this)
     this
     (let [c (resource-cmpr this x opts)]
-      (if (and (= c 0) (= 1 (.getLevel this opts)))
+      (if (and (= c 0) (= 1 (-getLevel this opts)))
         (right-node this opts)
         (let [t (cond
                   (> c 0)
@@ -391,20 +382,20 @@
 
   INode
 
-  (newNode [this t2 level left right cnt opts]
+  (-newNode [this t2 level left right cnt opts]
     (->Node t2 level left right cnt))
 
-  (getT2 [this opts] t2)
+  (-getT2 [this opts] t2)
 
-  (getLevel [this opts] level)
+  (-getLevel [this opts] level)
 
-  (getLeft [this opts] left)
+  (-getLeft [this opts] left)
 
-  (getRight [this opts] right)
+  (-getRight [this opts] right)
 
-  (getCnt [this opts] cnt)
+  (-getCnt [this opts] cnt)
 
-  (getNada [this] (create-empty-node)))
+  (-getNada [this] (create-empty-node)))
 
 (def emptyNode
   (->Node nil 0 nil nil 0))
@@ -412,16 +403,16 @@
 (defn create-empty-node []
   emptyNode)
 
-(defn snodev [^INode this opts]
+(defn snodev [this opts]
   (if (empty-node? this)
     ""
-    (str (snodev (.getLeft this opts) opts)
+    (str (snodev (-getLeft this opts) opts)
          " <"
-         (.getT2 this opts)
+         (-getT2 this opts)
          " "
-         (.getLevel this opts)
+         (-getLevel this opts)
          "> "
-         (snodev (.getRight this opts) opts))))
+         (snodev (-getRight this opts) opts))))
 
 (defn pnodev [this dsc opts]
   (println dsc (snodev this opts)))
@@ -430,17 +421,11 @@
   (factoryId [])
   (instanceClass [])
   (qualified [t2 opts])
-  (sval [^durable.nodes.INode inode opts])
-  (valueLength [^durable.nodes.INode node
-                opts])
-  (deserialize [^durable.nodes.INode node
-                ^java.nio.ByteBuffer buffer
-                opts])
-  (writeValue [^durable.nodes.INode node
-               ^java.nio.ByteBuffer buffer
-               opts])
-  (valueNode [^durable.nodes.INode node
-              opts]))
+  (sval [inode opts])
+  (valueLength [node opts])
+  (deserialize [node ^java.nio.ByteBuffer buffer opts])
+  (writeValue [node ^java.nio.ByteBuffer buffer opts])
+  (valueNode [node opts]))
 
 (deftype factory-registry [by-id-atom by-class-atom])
 
@@ -522,11 +507,11 @@
       (compare-and-set! sval-atom nil (.sval factory wrapper-node opts)))
     @sval-atom))
 
-(defn default-sval [this ^INode inode opts]
-  (pr-str (.getT2 inode opts)))
+(defn default-sval [this inode opts]
+  (pr-str (-getT2 inode opts)))
 
-(defn key-sval [this ^INode inode opts]
-  (let [^MapEntry map-entry (.getT2 inode opts)]
+(defn key-sval [this inode opts]
+  (let [^MapEntry map-entry (-getT2 inode opts)]
     (pr-str (.getKey map-entry))))
 
 (defn deserialize-sval [this ^WrapperNode wrapper-node ^ByteBuffer bb opts]
