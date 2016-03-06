@@ -426,10 +426,6 @@
 (defn pnodev [this dsc opts]
   (println dsc (snodev this opts)))
 
-(definterface FlexVector
-  (dropNode [i])
-  (addNode [i v]))
-
 (definterface IFactory
   (factoryId [])
   (instanceClass [])
@@ -458,38 +454,32 @@
 
 (def default-factory-registry (create-factory-registry))
 
-(definterface AAContext
-  (classAtom [])
-  (getDefaultFactory [])
-  (setDefaultFactory [factory])
-  (refineInstance [inst]))
-
 (defn ^IFactory factory-for-id [id opts]
   (let [^factory-registry r (:factory-registry opts)
         _ (if (nil? r) (println "oh!"))
         f (@(.-by_id_atom r) id)]
     (if (nil? f)
-      (let [^AAContext context (:aacontext opts)]
-        (.getDefaultFactory context))
+      (let [context (:aacontext opts)]
+        (-getDefaultFactory context))
       f)))
 
-(defn register-class [^AAContext aacontext ^IFactory factory]
+(defn register-class [aacontext ^IFactory factory]
   (let [clss (.instanceClass factory)]
     (if clss
-      (swap! (.classAtom aacontext) assoc clss factory))))
+      (swap! (-classAtom aacontext) assoc clss factory))))
 
-(defn ^IFactory factory-for-class [^AAContext aacontext clss opts]
-  (let [f (@(.classAtom aacontext) clss)]
+(defn ^IFactory factory-for-class [aacontext clss opts]
+  (let [f (@(-classAtom aacontext) clss)]
     (if (nil? f)
-      (let [^AAContext context (:aacontext opts)]
-        (.getDefaultFactory context))
+      (let [context (:aacontext opts)]
+        (-getDefaultFactory context))
       f)))
 
 (defn className [^Class c] (.getName c))
 
 (defn ^IFactory factory-for-instance [inst opts]
-  (let [^AAContext aacontext (:aacontext opts)
-        inst (.refineInstance aacontext inst)
+  (let [aacontext (:aacontext opts)
+        inst (-refineInstance aacontext inst)
         clss (class inst)
         f (factory-for-class aacontext clss opts)
         q (.qualified f inst opts)]
@@ -498,7 +488,7 @@
       q)))
 
 (defn register-factory [^factory-registry fregistry
-                        ^AAContext aacontext
+                        aacontext
                         ^IFactory factory]
   (swap! (.-by-id-atom fregistry) assoc (.factoryId factory) factory)
   (register-class aacontext factory))
@@ -564,40 +554,40 @@
     (.put cb sv)
     (.position buffer (+ (* 2 svl) (.position buffer)))))
 
-(def ^AAContext vector-context
+(def vector-context
   (let [class-atom (atom {})
         factory-atom (atom nil)]
     (reify AAContext
-      (classAtom [this] class-atom)
-      (getDefaultFactory [this] @factory-atom)
-      (setDefaultFactory
+      (-classAtom [this] class-atom)
+      (-getDefaultFactory [this] @factory-atom)
+      (-setDefaultFactory
         [this f]
         (compare-and-set! factory-atom nil f))
-      (refineInstance [this inst] inst))))
+      (-refineInstance [this inst] inst))))
 
-(def ^AAContext map-context
+(def map-context
   (let [class-atom (atom {})
         factory-atom (atom nil)]
     (reify AAContext
-      (classAtom [this] class-atom)
-      (getDefaultFactory [this] @factory-atom)
-      (setDefaultFactory
+      (-classAtom [this] class-atom)
+      (-getDefaultFactory [this] @factory-atom)
+      (-setDefaultFactory
         [this f]
         (compare-and-set! factory-atom nil f))
-      (refineInstance [this inst]
+      (-refineInstance [this inst]
         (let [^MapEntry map-entry inst]
           (.getValue map-entry))))))
 
-(def ^AAContext set-context
+(def set-context
   (let [class-atom (atom {})
         factory-atom (atom nil)]
     (reify AAContext
-      (classAtom [this] class-atom)
-      (getDefaultFactory [this] @factory-atom)
-      (setDefaultFactory
+      (-classAtom [this] class-atom)
+      (-getDefaultFactory [this] @factory-atom)
+      (-setDefaultFactory
         [this f]
         (compare-and-set! factory-atom nil f))
-      (refineInstance [this inst]
+      (-refineInstance [this inst]
         (let [^MapEntry map-entry inst]
           (.getKey map-entry))))))
 
@@ -639,7 +629,7 @@
       (default-write-value this node buffer opts))
     (valueNode [this node opts] nil)))
 
-(.setDefaultFactory
+(-setDefaultFactory
   vector-context
   (factory-for-id
     (byte \e)
@@ -664,7 +654,7 @@
       (default-write-value this node buffer opts))
     (valueNode [this node opts] nil)))
 
-(.setDefaultFactory
+(-setDefaultFactory
   map-context
   (factory-for-id
     (byte \p)
@@ -688,7 +678,7 @@
       (default-write-value this node buffer opts))
     (valueNode [this node opts] nil)))
 
-(.setDefaultFactory
+(-setDefaultFactory
   set-context
   (factory-for-id
     (byte \q)

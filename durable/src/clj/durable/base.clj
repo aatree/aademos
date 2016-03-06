@@ -10,3 +10,13 @@
 
 (defprotocol INoded
   (-getState [this]))
+
+(defprotocol AAContext
+  (-classAtom [this])
+  (-getDefaultFactory [this])
+  (-setDefaultFactory [this factory])
+  (-refineInstance [this inst]))
+
+(defprotocol FlexVector
+  (-dropNode [this i])
+  (-addNode [this i v]))
