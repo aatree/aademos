@@ -23,4 +23,6 @@
   (println (key me) (val me))
 
   (def b (buffer/newBuffer 4))
+  (println (buffer/-capacity b))
+  (println (buffer/-position b))
   )

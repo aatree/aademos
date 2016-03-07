@@ -2,13 +2,18 @@
   (:require [octet.core :as buf])
   #?(:clj (:import (java.nio CharBuffer ByteBuffer))))
 
-(defprotocol buffer
-  )
+(defprotocol aa-buffer
+  (-capacity [this])
+  (-position [this]))
 
 #?(:clj (extend-type ByteBuffer
-          buffer)
+          aa-buffer
+          (-capacity [this] (.capacity this))
+          (-position [this] (.position this)))
    :cljs (deftype aabuf  [p b]
-           buffer))
+           aa-buffer
+           (-capacity [this] (aget b "byteLength"))
+           (-position [this] p)))
 
 (defn newBuffer [size]
 #?(:clj (buf/allocate size)
