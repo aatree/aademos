@@ -10,7 +10,7 @@
     :init init
     :state state
     :methods [^:static [create [java.util.Iterator Long clojure.lang.IFn] Object]])
-  (:require [durable.base :refer :all])
+  (:require [durable.base :as base])
   (:import (java.util Iterator)
            (clojure.lang Counted)
            (durable CountedSequence)))
@@ -18,7 +18,7 @@
 (set! *warn-on-reflection* true)
 
 (defn -create [iter initialIndex styp]
-  (if (< 0 (xicount iter initialIndex))
+  (if (< 0 (base/xicount iter initialIndex))
     (new durable.CountedSequence iter initialIndex styp)
     nil))
 
@@ -39,17 +39,17 @@
 
 (defn -first [^CountedSequence this]
   (let [s (.-state this)]
-    (xifetch (iter s) (:ndx s))))
+    (base/xifetch (iter s) (:ndx s))))
 
 (defn -next [^CountedSequence this]
   (let [s (.-state this)
-        ^XIterator it (iter s)
+        it (iter s)
         r (:rst s)]
     (when (= s @r)
       (-first this)
-      (swap! r #(if (= s %) (-create it (xibumpIndex it (:ndx s)) (:styp s)))))
+      (swap! r #(if (= s %) (-create it (base/xibumpIndex it (:ndx s)) (:styp s)))))
     @(:rst s)))
 
 (defn -count [^CountedSequence this]
   (let [s (.-state this)]
-    (xicount (iter s) (:ndx s))))
+    (base/xicount (iter s) (:ndx s))))

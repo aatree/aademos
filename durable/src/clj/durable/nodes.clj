@@ -417,16 +417,6 @@
 (defn pnodev [this dsc opts]
   (println dsc (snodev this opts)))
 
-(definterface IFactory
-  (factoryId [])
-  (instanceClass [])
-  (qualified [t2 opts])
-  (sval [inode opts])
-  (valueLength [node opts])
-  (deserialize [node ^java.nio.ByteBuffer buffer opts])
-  (writeValue [node ^java.nio.ByteBuffer buffer opts])
-  (valueNode [node opts]))
-
 (deftype factory-registry [by-id-atom by-class-atom])
 
 (defn ^factory-registry create-factory-registry
@@ -439,7 +429,7 @@
 
 (def default-factory-registry (create-factory-registry))
 
-(defn ^IFactory factory-for-id [id opts]
+(defn factory-for-id [id opts]
   (let [^factory-registry r (:factory-registry opts)
         _ (if (nil? r) (println "oh!"))
         f (@(.-by_id_atom r) id)]
@@ -448,12 +438,12 @@
         (-getDefaultFactory context))
       f)))
 
-(defn register-class [aacontext ^IFactory factory]
-  (let [clss (.instanceClass factory)]
+(defn register-class [aacontext factory]
+  (let [clss (-instanceClass factory)]
     (if clss
       (swap! (-classAtom aacontext) assoc clss factory))))
 
-(defn ^IFactory factory-for-class [aacontext clss opts]
+(defn factory-for-class [aacontext clss opts]
   (let [f (@(-classAtom aacontext) clss)]
     (if (nil? f)
       (let [context (:aacontext opts)]
@@ -462,20 +452,20 @@
 
 (defn className [^Class c] (.getName c))
 
-(defn ^IFactory factory-for-instance [inst opts]
+(defn factory-for-instance [inst opts]
   (let [aacontext (:aacontext opts)
         inst (-refineInstance aacontext inst)
         clss (class inst)
         f (factory-for-class aacontext clss opts)
-        q (.qualified f inst opts)]
+        q (-qualified f inst opts)]
     (if (nil? q)
       (throw (UnsupportedOperationException. (str "Unknown qualified durable class: " (className clss))))
       q)))
 
 (defn register-factory [^factory-registry fregistry
                         aacontext
-                        ^IFactory factory]
-  (swap! (.-by-id-atom fregistry) assoc (.factoryId factory) factory)
+                        factory]
+  (swap! (.-by-id-atom fregistry) assoc (-factoryId factory) factory)
   (register-class aacontext factory))
 
 (defn node-byte-length [wrapper-node opts]
@@ -484,7 +474,7 @@
 (defn node-write [wrapper-node buffer opts]
   (-nodeWrite wrapper-node buffer opts))
 
-(defn ^IFactory get-factory [wrapper-node]
+(defn get-factory [wrapper-node]
   (-factory wrapper-node))
 
 (defn get-buffer-atom [wrapper-node]
@@ -493,10 +483,10 @@
 (defn ^java.nio.ByteBuffer get-buffer [wrapper-node]
   @(-bufferAtom wrapper-node))
 
-(defn str-val [^IFactory factory wrapper-node opts]
+(defn str-val [factory wrapper-node opts]
   (let [sval-atom (-svalAtom wrapper-node)]
     (if (nil? @sval-atom)
-      (compare-and-set! sval-atom nil (.sval factory wrapper-node opts)))
+      (compare-and-set! sval-atom nil (-sval factory wrapper-node opts)))
     @sval-atom))
 
 (defn default-sval [this inode opts]
@@ -520,7 +510,7 @@
   (+ 4                                                      ;sval length
      (* 2 (count (str-val this wrapper-node opts)))))       ;sval
 
-(defn default-write-value [^IFactory f
+(defn default-write-value [f
                            wrapper-node
                            ^ByteBuffer buffer
                            opts]
@@ -584,27 +574,27 @@
   default-factory-registry
   nil
   (reify IFactory
-    (factoryId [this] (byte \n))                            ;;;;;;;;;;;;;;;;;;;;;;;; n - nil content
-    (instanceClass [this] nil)
-    (qualified [this t2 opts] this)
-    (valueNode [this node opts] nil)))
+    (-factoryId [this] (byte \n))                            ;;;;;;;;;;;;;;;;;;;;;;;; n - nil content
+    (-instanceClass [this] nil)
+    (-qualified [this t2 opts] this)
+    (-valueNode [this node opts] nil)))
 
 (register-factory
   default-factory-registry
   vector-context
   (reify IFactory
-    (factoryId [this] (byte \e))                            ;;;;;;;;;;;;;;;;;;;;;; e - vector default factory
-    (instanceClass [this] nil)
-    (qualified [this t2 opts] this)
-    (sval [this inode opts]
+    (-factoryId [this] (byte \e))                            ;;;;;;;;;;;;;;;;;;;;;; e - vector default factory
+    (-instanceClass [this] nil)
+    (-qualified [this t2 opts] this)
+    (-sval [this inode opts]
       (default-sval this inode opts))
-    (valueLength [this node opts]
+    (-valueLength [this node opts]
       (default-valueLength this node opts))
-    (deserialize [this node bb opts]
+    (-deserialize [this node bb opts]
       (deserialize-sval this node bb opts))
-    (writeValue [this node buffer opts]
+    (-writeValue [this node buffer opts]
       (default-write-value this node buffer opts))
-    (valueNode [this node opts] nil)))
+    (-valueNode [this node opts] nil)))
 
 (-setDefaultFactory
   vector-context
@@ -616,20 +606,20 @@
   default-factory-registry
   map-context
   (reify IFactory
-    (factoryId [this] (byte \p))                            ;;;;;;;;;;;;;;;;;;;;;;;;;;; p - map default factory
-    (instanceClass [this] nil)
-    (qualified [this t2 opts] this)
-    (sval [this inode opts]
+    (-factoryId [this] (byte \p))                            ;;;;;;;;;;;;;;;;;;;;;;;;;;; p - map default factory
+    (-instanceClass [this] nil)
+    (-qualified [this t2 opts] this)
+    (-sval [this inode opts]
       (default-sval this inode opts))
-    (valueLength [this node opts]
+    (-valueLength [this node opts]
       (default-valueLength this node opts))
-    (deserialize [this node bb opts]
+    (-deserialize [this node bb opts]
       (let [^PersistentVector v (deserialize-sval this node bb opts)
             t2 (MapEntry. (.get v 0) (.get v 1))]
         t2))
-    (writeValue [this node buffer opts]
+    (-writeValue [this node buffer opts]
       (default-write-value this node buffer opts))
-    (valueNode [this node opts] nil)))
+    (-valueNode [this node opts] nil)))
 
 (-setDefaultFactory
   map-context
@@ -641,19 +631,19 @@
   default-factory-registry
   set-context
   (reify IFactory
-    (factoryId [this] (byte \q))                            ;;;;;;;;;;;;;;;;;;;;;;;;;;; q - set default factory
-    (instanceClass [this] nil)
-    (qualified [this t2 opts] this)
-    (sval [this inode opts]
+    (-factoryId [this] (byte \q))                            ;;;;;;;;;;;;;;;;;;;;;;;;;;; q - set default factory
+    (-instanceClass [this] nil)
+    (-qualified [this t2 opts] this)
+    (-sval [this inode opts]
       (key-sval this inode opts))
-    (valueLength [this node opts]
+    (-valueLength [this node opts]
       (default-valueLength this node opts))
-    (deserialize [this node bb opts]
+    (-deserialize [this node bb opts]
       (let [k (deserialize-sval this node bb opts)]
         (MapEntry. k k)))
-    (writeValue [this node buffer opts]
+    (-writeValue [this node buffer opts]
       (default-write-value this node buffer opts))
-    (valueNode [this node opts] nil)))
+    (-valueNode [this node opts] nil)))
 
 (-setDefaultFactory
   set-context
