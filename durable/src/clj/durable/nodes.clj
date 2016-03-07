@@ -1,5 +1,5 @@
 (ns durable.nodes
-  (:require   [durable.base :refer :all]
+  (:require   [durable.base :as base]
               [durable.CountedSequence :refer :all])
   (:import (clojure.lang Counted MapEntry IMapEntry PersistentVector)
            (java.util Iterator Comparator)
@@ -191,7 +191,7 @@
    ^Long cnt
    opts]
 
-  XIterator
+  base/XIterator
   (xicount [this index]
     (- cnt index))
   (xiindex [this]
@@ -203,15 +203,15 @@
 
   Counted
   (count [this]
-    (xicount this ndx))
+    (base/xicount this ndx))
 
   Iterator
   (hasNext [this]
     (< ndx cnt))
   (next [this]
     (let [i ndx]
-      (set! ndx (xibumpIndex this i))
-      (xifetch this i))))
+      (set! ndx (base/xibumpIndex this i))
+      (base/xifetch this i))))
 
 (defn ^counted-iterator new-counted-iterator
   ([node opts]
@@ -222,17 +222,17 @@
 (defn ^CountedSequence new-counted-seq
   ([node opts]
    (let [it (new-counted-iterator node opts)]
-     (CountedSequence/create it (xiindex it) identity)))
+     (CountedSequence/create it (base/xiindex it) identity)))
   ([node i opts]
    (let [it (new-counted-iterator node i opts)]
-     (CountedSequence/create it (xiindex it) identity))))
+     (CountedSequence/create it (base/xiindex it) identity))))
 
 (deftype counted-reverse-iterator
   [node
    ^{:volatile-mutable true} ndx
    opts]
 
-  XIterator
+  base/XIterator
   (xicount [this index]
     (+ 1 index))
   (xiindex [this]
@@ -244,15 +244,15 @@
 
   Counted
   (count [this]
-    (xicount this ndx))
+    (base/xicount this ndx))
 
   Iterator
   (hasNext [this]
     (>= ndx 0))
   (next [this]
     (let [i ndx]
-      (set! ndx (xibumpIndex this i))
-      (xifetch this i))))
+      (set! ndx (base/xibumpIndex this i))
+      (base/xifetch this i))))
 
 (defn ^counted-reverse-iterator new-counted-reverse-iterator
   ([node opts]
@@ -263,10 +263,10 @@
 (defn ^CountedSequence new-counted-reverse-seq
   ([node opts]
    (let [it (new-counted-reverse-iterator node opts)]
-     (CountedSequence/create it (xiindex it) identity)))
+     (CountedSequence/create it (base/xiindex it) identity)))
   ([node i opts]
    (let [it (new-counted-reverse-iterator node i opts)]
-     (CountedSequence/create it (xiindex it) identity))))
+     (CountedSequence/create it (base/xiindex it) identity))))
 
 (defn vector-add [n v i opts]
   (if (empty-node? n)
@@ -330,15 +330,15 @@
 (defn ^CountedSequence new-map-entry-seq
   ([node x opts]
    (let [it (new-map-entry-iterator node x opts)]
-     (CountedSequence/create it (xiindex it) identity))))
+     (CountedSequence/create it (base/xiindex it) identity))))
 
 (defn ^CountedSequence new-map-key-seq [node opts]
   (let [it (new-counted-iterator node opts)]
-    (CountedSequence/create it (xiindex it) key-of)))
+    (CountedSequence/create it (base/xiindex it) key-of)))
 
 (defn ^CountedSequence new-map-value-seq [node opts]
   (let [it (new-counted-iterator node opts)]
-    (CountedSequence/create it (xiindex it) value-of)))
+    (CountedSequence/create it (base/xiindex it) value-of)))
 
 (defn ^counted-reverse-iterator new-map-entry-reverse-iterator
   ([node x opts]
@@ -347,15 +347,15 @@
 (defn ^CountedSequence new-map-entry-reverse-seq
   ([node x opts]
    (let [it (new-map-entry-reverse-iterator node x opts)]
-     (CountedSequence/create it (xiindex it) identity))))
+     (CountedSequence/create it (base/xiindex it) identity))))
 
 (defn ^CountedSequence new-map-key-reverse-seq [node opts]
   (let [it (new-counted-reverse-iterator node opts)]
-    (CountedSequence/create it (xiindex it) key-of)))
+    (CountedSequence/create it (base/xiindex it) key-of)))
 
 (defn ^CountedSequence new-map-value-reverse-seq [node opts]
   (let [it (new-counted-reverse-iterator node opts)]
-    (CountedSequence/create it (xiindex it) value-of)))
+    (CountedSequence/create it (base/xiindex it) value-of)))
 
 (defn map-insert [this ^MapEntry t-2 opts]
   (if (empty-node? this)
