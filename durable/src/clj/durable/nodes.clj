@@ -478,31 +478,23 @@
   (swap! (.-by-id-atom fregistry) assoc (.factoryId factory) factory)
   (register-class aacontext factory))
 
-(definterface WrapperNode
-  (svalAtom [])
-  (blenAtom [])
-  (bufferAtom [])
-  (factory [])
-  (nodeByteLength [opts])
-  (nodeWrite [buffer opts]))
+(defn node-byte-length [wrapper-node opts]
+  (-nodeByteLength wrapper-node opts))
 
-(defn node-byte-length [^WrapperNode wrapper-node opts]
-  (.nodeByteLength wrapper-node opts))
+(defn node-write [wrapper-node buffer opts]
+  (-nodeWrite wrapper-node buffer opts))
 
-(defn node-write [^WrapperNode wrapper-node buffer opts]
-  (.nodeWrite wrapper-node buffer opts))
+(defn ^IFactory get-factory [wrapper-node]
+  (-factory wrapper-node))
 
-(defn ^IFactory get-factory [^WrapperNode wrapper-node]
-  (.factory wrapper-node))
+(defn get-buffer-atom [wrapper-node]
+  (-bufferAtom wrapper-node))
 
-(defn get-buffer-atom [^WrapperNode wrapper-node]
-  (.bufferAtom wrapper-node))
+(defn ^java.nio.ByteBuffer get-buffer [wrapper-node]
+  @(-bufferAtom wrapper-node))
 
-(defn ^java.nio.ByteBuffer get-buffer [^WrapperNode wrapper-node]
-  @(.bufferAtom wrapper-node))
-
-(defn str-val [^IFactory factory ^WrapperNode wrapper-node opts]
-  (let [sval-atom (.svalAtom wrapper-node)]
+(defn str-val [^IFactory factory wrapper-node opts]
+  (let [sval-atom (-svalAtom wrapper-node)]
     (if (nil? @sval-atom)
       (compare-and-set! sval-atom nil (.sval factory wrapper-node opts)))
     @sval-atom))
@@ -514,22 +506,22 @@
   (let [^MapEntry map-entry (-getT2 inode opts)]
     (pr-str (.getKey map-entry))))
 
-(defn deserialize-sval [this ^WrapperNode wrapper-node ^ByteBuffer bb opts]
+(defn deserialize-sval [this wrapper-node ^ByteBuffer bb opts]
   (let [svl (.getInt bb)
         ^CharBuffer cb (.asCharBuffer bb)
         svc (char-array svl)
         _ (.get cb svc)
         sv (String. svc)
-        _ (reset! (.svalAtom wrapper-node) sv)
+        _ (reset! (-svalAtom wrapper-node) sv)
         _ (.position bb (+ (.position bb) (* 2 svl)))]
     (read-string opts sv)))
 
-(defn default-valueLength [this ^WrapperNode wrapper-node opts]
+(defn default-valueLength [this wrapper-node opts]
   (+ 4                                                      ;sval length
      (* 2 (count (str-val this wrapper-node opts)))))       ;sval
 
 (defn default-write-value [^IFactory f
-                           ^WrapperNode wrapper-node
+                           wrapper-node
                            ^ByteBuffer buffer
                            opts]
   (let [^String sv (str-val f wrapper-node opts)

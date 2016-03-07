@@ -11,6 +11,14 @@
 (defprotocol INoded
   (-getState [this]))
 
+(defprotocol WrapperNode
+  (-svalAtom [this])
+  (-blenAtom [this])
+  (-bufferAtom [this])
+  (-factory [this])
+  (-nodeByteLength [this opts])
+  (-nodeWrite [this buffer opts]))
+
 (defprotocol AAContext
   (-classAtom [this])
   (-getDefaultFactory [this])
