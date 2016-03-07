@@ -2,11 +2,47 @@
   (:require   [durable.base :refer :all]
               [durable.CountedSequence :refer :all])
   (:import (clojure.lang Counted MapEntry IMapEntry PersistentVector)
-           (java.util Iterator Comparator BitSet)
+           (java.util Iterator Comparator)
            (durable CountedSequence)
-           (java.nio CharBuffer ByteBuffer LongBuffer)))
+           (java.nio CharBuffer ByteBuffer)))
 
 (set! *warn-on-reflection* true)
+
+(defprotocol INoded
+  (-getState [this]))
+
+(defprotocol INode
+  (-newNode [this t2 ^Long level left right ^Long cnt opts])
+  (-getT2 [this opts])
+  (^Long -getLevel [this opts])
+  (-getLeft [this opts])
+  (-getRight [this opts])
+  (^Long -getCnt [this opts])
+  (-getNada [this]))
+
+(defprotocol WrapperNode
+  (-svalAtom [this])
+  (-blenAtom [this])
+  (-bufferAtom [this])
+  (-factory [this])
+  (-nodeByteLength [this opts])
+  (-nodeWrite [this buffer opts]))
+
+(defprotocol AAContext
+  (-classAtom [this])
+  (-getDefaultFactory [this])
+  (-setDefaultFactory [this factory])
+  (-refineInstance [this inst]))
+
+(defprotocol IFactory
+  (-factoryId [this])
+  (-instanceClass [this])
+  (-qualified [this t2 opts])
+  (-sval [this inode opts])
+  (-valueLength [this node opts])
+  (-deserialize [this node ^java.nio.ByteBuffer buffer opts])
+  (-writeValue [this node ^java.nio.ByteBuffer buffer opts])
+  (-valueNode [this node opts]))
 
 (deftype noded-state [node opts meta])
 
@@ -151,7 +187,7 @@
 
 (deftype counted-iterator
   [node
-   ^{:volatile-mutable true Long true} ndx
+   ^{:volatile-mutable true} ndx
    ^Long cnt
    opts]
 
@@ -193,7 +229,7 @@
 
 (deftype counted-reverse-iterator
   [node
-   ^{:volatile-mutable true Long true} ndx
+   ^{:volatile-mutable true} ndx
    opts]
 
   XIterator
@@ -650,34 +686,6 @@
   (factory-for-id
     (byte \q)
     {:factory-registry default-factory-registry}))
-
-(defn ^BitSet compute-cs256 [^ByteBuffer bb]
-  (let [^BitSet bs (BitSet. 256)
-        len (.remaining bb)]
-    (reduce (fn [^BitSet bitset i]
-              (let [bbv (- (.get bb) Byte/MIN_VALUE)
-                    j (mod (+ bbv (* i 7)) 256)]
-                (.flip bitset j))
-              bitset)
-            bs
-            (range len))
-    bs))
-
-(defn put-cs256 [^ByteBuffer bb ^BitSet cs256]
-  (let [la (.toLongArray cs256)
-        lal (alength la)
-        r (range (- 4 lal))
-        ^LongBuffer lb (.asLongBuffer bb)]
-    (.put lb la)
-    (reduce (fn [a b] (.put lb 0)) 0 r))
-  (.position bb (+ (.position bb) 32)))
-
-(defn ^BitSet get-cs256 [^ByteBuffer bb]
-  (let [la (long-array 4)
-        _ (.get (.asLongBuffer bb) (longs la))
-        bs (BitSet/valueOf (longs la))]
-    (.position bb (+ (.position bb) 32))
-    bs))
 
 (defn same? [val opts]
   (if (instance? INoded val)

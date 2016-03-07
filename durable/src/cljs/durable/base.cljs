@@ -2,6 +2,12 @@
   (:require-macros
     [cljs.core :refer [es6-iterable]]))
 
+(defprotocol XIterator
+  (^Long xiindex [this])
+  (xibumpIndex [this index])
+  (xicount [this index])
+  (xifetch [this index]))
+
 (defn- -indexOf
   ([coll x]
    (-indexOf coll x 0))
@@ -35,12 +41,6 @@
              idx
              (recur (dec idx)))
            -1))))))
-
-(defprotocol XIterator
-  (^Long xiindex [this])
-  (xibumpIndex [this index])
-  (xicount [this index])
-  (xifetch [this index]))
 
 (deftype CountedSequence [iter i styp meta]
   Object
