@@ -1,4 +1,5 @@
-(ns durable.base)
+(ns durable.base
+  (:import (clojure.lang MapEntry)))
 
 (set! *warn-on-reflection* true)
 
@@ -11,3 +12,5 @@
 (defprotocol FlexVector
   (-dropNode [this i])
   (-addNode [this i v]))
+
+(defn newMapEntry [k v] (MapEntry. k v))

@@ -1,5 +1,6 @@
 (ns durable.games
-  (:require [durable.vec-it :as vec-it]))
+  (:require [durable.vec-it :as vec-it]
+            [durable.base :as base]))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -15,4 +16,9 @@
   (println s3)
   (println (first s3))
 
-  (println (next s3)))
+  (println (next s3))
+
+  (def me (base/newMapEntry 1 2))
+  (println (key me) (val me))
+
+  )

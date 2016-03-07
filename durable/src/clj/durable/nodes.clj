@@ -1,10 +1,12 @@
 (ns durable.nodes
   (:require   [durable.base :as base]
+              [octet.core :as buf]
               [durable.CountedSequence :refer :all])
-  (:import (clojure.lang Counted MapEntry IMapEntry PersistentVector)
+  (:import (clojure.lang Counted PersistentVector)
            (java.util Iterator Comparator)
            (durable CountedSequence)
-           (java.nio CharBuffer ByteBuffer)))
+           (java.nio CharBuffer ByteBuffer)
+           ))
 
 (set! *warn-on-reflection* true)
 
@@ -298,14 +300,14 @@
           opts)
         opts))))
 
-(defn ^MapEntry get-entry [this opts] (-getT2 this opts))
+(defn get-entry [this opts] (-getT2 this opts))
 
-(defn key-of [^IMapEntry e] (.getKey e))
+(defn key-of [e] (key e))
 
-(defn value-of [^IMapEntry e] (.getValue e))
+(defn value-of [e] (val e))
 
 (defn map-cmpr [this x ^Comparator comparator opts]
-  (.compare comparator x (.getKey (get-entry this opts))))
+  (.compare comparator x (key (get-entry this opts))))
 
 (defn resource-cmpr [this x opts] (map-cmpr this x (:comparator opts) opts))
 
@@ -357,10 +359,10 @@
   (let [it (new-counted-reverse-iterator node opts)]
     (CountedSequence/create it (base/xiindex it) value-of)))
 
-(defn map-insert [this ^MapEntry t-2 opts]
+(defn map-insert [this t-2 opts]
   (if (empty-node? this)
     (-newNode this t-2 1 nil nil 1 opts)
-    (let [c (resource-cmpr this (.getKey t-2) opts)]
+    (let [c (resource-cmpr this (key t-2) opts)]
       (split (skew (cond
                      (< c 0)
                      (let [oldl (left-node this opts)
@@ -371,10 +373,10 @@
                            r (map-insert oldr t-2 opts)]
                        (revise this [:right r] opts))
                      :else
-                     (if (identical? (.getValue t-2) (.getValue (get-entry this opts)))
+                     (if (identical? (val t-2) (val (get-entry this opts)))
                        this
                        (revise this
-                               [:t2 (new MapEntry (.getKey (get-entry this opts)) (.getValue t-2))]
+                               [:t2 (base/newMapEntry (key (get-entry this opts)) (val t-2))]
                                opts))) opts) opts))))
 
 (defn map-get-t2 [this x opts]
@@ -398,8 +400,8 @@
                   (< c 0)
                   (revise this [:left (map-del (left-node this opts) x opts)] opts)
                   :else
-                  (let [^MapEntry p (predecessor-t2 this opts)]
-                    (revise this [:t2 p :left (map-del (left-node this opts) (.getKey p) opts)] opts)))
+                  (let [p (predecessor-t2 this opts)]
+                    (revise this [:t2 p :left (map-del (left-node this opts) (key p) opts)] opts)))
               t (decrease-level t opts)
               t (skew t opts)
               t (revise t [:right (skew (right-node t opts) opts)] opts)
@@ -529,8 +531,8 @@
   (pr-str (-getT2 inode opts)))
 
 (defn key-sval [this inode opts]
-  (let [^MapEntry map-entry (-getT2 inode opts)]
-    (pr-str (.getKey map-entry))))
+  (let [map-entry (-getT2 inode opts)]
+    (pr-str (key map-entry))))
 
 (defn deserialize-sval [this wrapper-node ^ByteBuffer bb opts]
   (let [svl (.getInt bb)
@@ -578,8 +580,8 @@
         [this f]
         (compare-and-set! factory-atom nil f))
       (-refineInstance [this inst]
-        (let [^MapEntry map-entry inst]
-          (.getValue map-entry))))))
+        (let [map-entry inst]
+          (val map-entry))))))
 
 (def set-context
   (let [class-atom (atom {})
@@ -591,8 +593,8 @@
         [this f]
         (compare-and-set! factory-atom nil f))
       (-refineInstance [this inst]
-        (let [^MapEntry map-entry inst]
-          (.getKey map-entry))))))
+        (let [map-entry inst]
+          (key map-entry))))))
 
 (defn vector-opts [opts]
   (assoc opts :aacontext vector-context))
@@ -651,7 +653,7 @@
       (default-valueLength this node opts))
     (-deserialize [this node bb opts]
       (let [^PersistentVector v (deserialize-sval this node bb opts)
-            t2 (MapEntry. (.get v 0) (.get v 1))]
+            t2 (base/newMapEntry (.get v 0) (.get v 1))]
         t2))
     (-writeValue [this node buffer opts]
       (default-write-value this node buffer opts))
@@ -676,7 +678,7 @@
       (default-valueLength this node opts))
     (-deserialize [this node bb opts]
       (let [k (deserialize-sval this node bb opts)]
-        (MapEntry. k k)))
+        (base/newMapEntry k k)))
     (-writeValue [this node buffer opts]
       (default-write-value this node buffer opts))
     (-valueNode [this node opts] nil)))

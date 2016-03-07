@@ -133,3 +133,5 @@
   (if (< 0 (xicount iter initialIndex))
     (CountedSequence. iter initialIndex styp nil)
     nil))
+
+(defn newMapEntry [k v] [k v])
