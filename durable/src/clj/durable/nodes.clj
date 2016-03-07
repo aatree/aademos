@@ -2,7 +2,7 @@
   (:require   [durable.base :as base]
               [octet.core :as buf]
               [durable.CountedSequence :refer :all])
-  (:import (clojure.lang Counted PersistentVector)
+  (:import (clojure.lang Counted)
            (java.util Iterator Comparator)
            (durable CountedSequence)
            (java.nio CharBuffer ByteBuffer)
@@ -652,8 +652,8 @@
     (-valueLength [this node opts]
       (default-valueLength this node opts))
     (-deserialize [this node bb opts]
-      (let [^PersistentVector v (deserialize-sval this node bb opts)
-            t2 (base/newMapEntry (.get v 0) (.get v 1))]
+      (let [v (deserialize-sval this node bb opts)
+            t2 (base/newMapEntry (get v 0) (get v 1))]
         t2))
     (-writeValue [this node buffer opts]
       (default-write-value this node buffer opts))
@@ -708,17 +708,17 @@
   (reduce conj ((:new-sorted-set opts) opts) (seq val)))
 
 (defn transcriber [val opts]
-  (if (instance? java.util.List val)
-    (if (instance? clojure.lang.IPersistentVector val)
+  (if (list? val)
+    (if (vector? val)
       (if (same? val opts)
         val
         (transcribe-vector val opts))
       val)
-    (if (instance? java.util.Map val)
+    (if (map? val)
       (if (same? val opts)
         val
         (transcribe-sorted-map val opts))
-      (if (instance? java.util.Set val)
+      (if (set? val)
         (if (same? val opts)
           val
           (transcribe-sorted-set val opts))
