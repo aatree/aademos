@@ -1,6 +1,5 @@
 (ns durable.nodes
   (:require   [durable.base :as base]
-              [octet.core :as buf]
               [durable.CountedSequence :refer :all])
   (:import (clojure.lang Counted)
            (java.util Iterator Comparator)

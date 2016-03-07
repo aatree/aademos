@@ -1,6 +1,7 @@
 (ns durable.games
   (:require [durable.vec-it :as vec-it]
-            [durable.base :as base]))
+            [durable.base :as base]
+            [durable.aabuffer :as buffer]))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -21,4 +22,5 @@
   (def me (base/newMapEntry 1 2))
   (println (key me) (val me))
 
+  (def b (buffer/newBuffer 4))
   )
