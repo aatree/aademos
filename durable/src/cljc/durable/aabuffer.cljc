@@ -1,5 +1,6 @@
 (ns durable.aabuffer
   (:require [octet.core :as buf])
+  (:refer-clojure :exclude [-reset!])
   #?(:clj (:import (java.nio CharBuffer ByteBuffer))))
 
 (defprotocol aa-buffer
@@ -14,7 +15,7 @@
   (-remaining [this])
   (-remaining? [this])
   (-mark! [this])
-  (-revert! [this]))
+  (-reset! [this]))
 
 #?(:clj (extend-type ByteBuffer
           aa-buffer
@@ -29,7 +30,7 @@
           (-remaining [this] (.remaining this))
           (-remaining? [this] (.hasRemaining this))
           (-mark! [this] (.mark this))
-          (-revert! [this] (.reset this)))
+          (-reset! [this] (.reset this)))
    :cljs (deftype aabuf  [^{:volatile-mutable true} m
                           ^{:volatile-mutable true} p
                           ^{:volatile-mutable true} l
@@ -60,7 +61,7 @@
            (-remaining [this] (- l p))
            (-remaining? [this] (< p l))
            (-mark! [this] (set! m p))
-           (-revert! [this]
+           (-reset! [this]
              (if (= m -1)
                (throw "invalid mark")
                (set! p m)))))
