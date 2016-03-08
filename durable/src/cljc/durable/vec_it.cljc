@@ -9,8 +9,7 @@
    (set! *warn-on-reflection* true))
 
 (deftype vector-iterator
-  [v
-   ^{:volatile-mutable true} ndx]
+  [v ^{:volatile-mutable true} ndx]
 
   #?@(:cljs (Object
               (hasNext [this]
