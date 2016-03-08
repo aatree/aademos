@@ -1,5 +1,6 @@
 (ns durable.aabuffer
-  (:require [octet.core :as buf])
+  (:require [octet.core :as buf]
+            [octet.spec :as spec])
   (:refer-clojure :exclude [-reset!])
   #?(:clj (:import (java.nio CharBuffer ByteBuffer))))
 
@@ -15,7 +16,12 @@
   (-remaining [this])
   (-remaining? [this])
   (-mark! [this])
-  (-reset! [this]))
+  (-reset! [this])
+  (-write!
+    [this data spec]
+    [this data spec offset])
+  (-read! [this spec])
+  (-read [this spec offset]))
 
 #?(:clj (extend-type ByteBuffer
           aa-buffer
@@ -30,7 +36,27 @@
           (-remaining [this] (.remaining this))
           (-remaining? [this] (.hasRemaining this))
           (-mark! [this] (.mark this))
-          (-reset! [this] (.reset this)))
+          (-reset! [this] (.reset this))
+          (-write!
+            [this data spec]
+            (let [dl (spec/write spec this p data)]
+              (set! p (+ p dl))
+              (when (> p l)
+                (set! p (- p dl))
+                (throw "possible buffer corruption by writing past limit"))
+              dl))
+          (-write!
+            [this data spec offset] (spec/write spec this offset data))
+          (-read!
+            [this spec]
+            (let [[dl data] (spec/read* spec this p)]
+              (set! p (+ p dl))
+              (when (> p l)
+                (set! p (- p dl))
+                (throw "read past limit"))
+              data))
+          (-read
+            [this spec offset] (spec/read spec this offset)))
    :cljs (deftype aabuf  [^{:volatile-mutable true} m
                           ^{:volatile-mutable true} p
                           ^{:volatile-mutable true} l
@@ -64,7 +90,27 @@
            (-reset! [this]
              (if (= m -1)
                (throw "invalid mark")
-               (set! p m)))))
+               (set! p m)))
+           (-write!
+             [this data spec]
+             (let [dl (spec/write spec this p data)]
+               (set! p (+ p dl))
+               (when (> p l)
+                 (set! p (- p dl))
+                 (throw "possible buffer corruption by writing past limit"))
+               dl))
+           (-write!
+             [this data spec offset] (spec/write spec this offset data))
+           (-read!
+             [this spec]
+             (let [[dl data] (spec/read* spec this p)]
+               (set! p (+ p dl))
+               (when (> p l)
+                 (set! p (- p dl))
+                 (throw "read past limit"))
+               data))
+           (-read
+             [this spec offset] (spec/read spec this offset))))
 
 (defn newBuffer [size]
 #?(:clj (buf/allocate size)
