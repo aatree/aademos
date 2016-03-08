@@ -9,7 +9,8 @@
   (-limit [this])
   (-limit! [this nl])
   (-clear! [this])
-  (-flip! [this]))
+  (-flip! [this])
+  (-rewind! [this]))
 
 #?(:clj (extend-type ByteBuffer
           aa-buffer
@@ -19,7 +20,8 @@
           (-limit [this] (.limit this))
           (-limit! [this nl] (.limit this nl))
           (-clear! [this] (.clear this))
-          (-flip! [this] (.flip this)))
+          (-flip! [this] (.flip this))
+          (-rewind! [this] (.rewind this)))
    :cljs (deftype aabuf  [^{:volatile-mutable true} p ^{:volatile-mutable true} l b]
            aa-buffer
            (-capacity [this] (aget b "byteLength"))
@@ -28,7 +30,8 @@
            (-limit [this] l)
            (-limit! [this nl] (set! l nl))
            (-clear! [this] (set! p 0) (set! l (-capacity this)))
-           (-flip! [this] (set! l p) (set! p 0))))
+           (-flip! [this] (set! l p) (set! p 0))
+           (-rewind! [this] (set! p 0))))
 
 (defn newBuffer [size]
 #?(:clj (buf/allocate size)

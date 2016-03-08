@@ -37,4 +37,8 @@
   (buffer/-flip! b)
   (println (buffer/-position b))
   (println (buffer/-limit b))
+  (buffer/-position! b 2)
+  (buffer/-rewind! b)
+  (println (buffer/-position b))
+  (println (buffer/-limit b))
   )
