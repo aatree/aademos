@@ -33,4 +33,8 @@
   (buffer/-clear! b)
   (println (buffer/-position b))
   (println (buffer/-limit b))
+  (buffer/-position! b 4)
+  (buffer/-flip! b)
+  (println (buffer/-position b))
+  (println (buffer/-limit b))
   )
