@@ -10,7 +10,9 @@
   (-limit! [this nl])
   (-clear! [this])
   (-flip! [this])
-  (-rewind! [this]))
+  (-rewind! [this])
+  (-remaining [this])
+  (-remaining? [this]))
 
 #?(:clj (extend-type ByteBuffer
           aa-buffer
@@ -21,18 +23,39 @@
           (-limit! [this nl] (.limit this nl))
           (-clear! [this] (.clear this))
           (-flip! [this] (.flip this))
-          (-rewind! [this] (.rewind this)))
-   :cljs (deftype aabuf  [^{:volatile-mutable true} p ^{:volatile-mutable true} l b]
+          (-rewind! [this] (.rewind this))
+          (-remaining [this] (.remaining this))
+          (-remaining? [this] (.hasRemaining this)))
+   :cljs (deftype aabuf  [^{:volatile-mutable true} m
+                          ^{:volatile-mutable true} p
+                          ^{:volatile-mutable true} l
+                          o c b]
            aa-buffer
            (-capacity [this] (aget b "byteLength"))
            (-position [this] p)
-           (-position! [this np] (set! p np))
+           (-position! [this np]
+             (if (or (< np 0) (> np l))
+               (throw "invalid position")
+               (do
+                 (set! p np)
+                 (if (< p m)
+                   (set! m -1))))
+             b)
            (-limit [this] l)
-           (-limit! [this nl] (set! l nl))
-           (-clear! [this] (set! p 0) (set! l (-capacity this)))
-           (-flip! [this] (set! l p) (set! p 0))
-           (-rewind! [this] (set! p 0))))
+           (-limit! [this nl]
+             (if (> nl c)
+               (throw "invalid limit")
+               (do
+                 (set! l nl)
+                 (if (< l p)
+                   (-position! this l))))
+             b)
+           (-clear! [this] (set! m -1) (set! p 0) (set! l c) b)
+           (-flip! [this] (set! l p) (set! p 0) b)
+           (-rewind! [this] (set! p 0) b)
+           (-remaining [this] (- l p))
+           (-remaining? [this] (< p l))))
 
 (defn newBuffer [size]
 #?(:clj (buf/allocate size)
-   :cljs (->aabuf 0 size (buf/allocate size))))
+   :cljs (->aabuf -1 0 size 0 size (buf/allocate size))))
