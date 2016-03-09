@@ -4,6 +4,11 @@
   (:refer-clojure :exclude [-reset!])
   #?(:clj (:import (java.nio CharBuffer ByteBuffer))))
 
+(defn data-size [spec data]
+  (if (satisfies? spec/ISpecDynamicSize spec)
+    (spec/size* spec data)
+    (spec/size spec)))
+
 (defprotocol aa-buffer
   (-capacity [this])
   (-position [this])
@@ -90,30 +95,32 @@
                (set! p m)))
            (-write!
              [this data spec]
-             (let [dl (spec/write spec b p data)]
-               (set! p (+ p dl))
-               (when (> p l)
-                 (set! p (- p dl))
-                 (throw "possible buffer corruption by writing past limit"))
+             (let [dl (data-size spec data)
+                   np (+ dl p)]
+               (if (> np l)
+                 (throw "remaining space is too small"))
+               (spec/write spec b (+ p o) data)
+               (set! p np)
                dl))
            (-write-at!
              [this data spec offset]
-             (let [dl (spec/write spec b offset data)
+             (let [dl (data-size spec data)
                    np (+ offset dl)]
                (if (> np l)
                  (throw "possible buffer corruption by writing past limit"))
+               (spec/write spec b (+ offset o) data)
                dl))
            (-read!
              [this spec]
-             (let [[dl data] (spec/read spec b p)]
+             (let [[dl data] (spec/read spec b (+ p o))]
                (set! p (+ p dl))
                (when (> p l)
                  (set! p (- p dl))
-                 (throw "read past limit"))
+                 (throw "remaining data is too small"))
                data))
            (-read-at
              [this spec offset]
-             (let [[dl data] (spec/read spec b offset)
+             (let [[dl data] (spec/read spec b (+ offset o))
                    np (+ offset dl)]
                (if (> np l)
                  (throw "read past limit"))
