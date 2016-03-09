@@ -1,7 +1,8 @@
 (ns durable.games
   (:require [durable.vec-it :as vec-it]
             [durable.base :as base]
-            [durable.aabuffer :as buffer]))
+            [durable.aabuffer :as buffer]
+            [octet.core :as octet]))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -41,4 +42,10 @@
   (buffer/-rewind! b)
   (println (buffer/-position b))
   (println (buffer/-limit b))
+  (buffer/-clear! b)
+  (buffer/-write! b 42 octet/int32)
+  (println (buffer/-position b))
+  (buffer/-flip! b)
+  (println (buffer/-read! b octet/int32))
+  (println (buffer/-position b))
   )
