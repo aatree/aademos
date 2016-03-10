@@ -1,6 +1,6 @@
 # buffers demo
 
-This project exercises cs256 in the [aautil repository][1].
+This project exercises buffer in the [aautil repository][1].
 
 ## Usage
 
@@ -13,5 +13,5 @@ This project exercises cs256 in the [aautil repository][1].
 2. Go to [http://localhost:8000][3] in your browser.
 And be sure to open the js console. 
 
-[1]: https://github.com/aatree/aautil#cs256
+[1]: https://github.com/aatree/aautil#buffer
 [3]: http://localhost:8000
