@@ -1,8 +1,6 @@
 (ns durable.games
   (:require [durable.vec-it :as vec-it]
-            [durable.base :as base]
-            [aautil.buffer :as buffer]
-            [octet.core :as octet]))
+            [durable.base :as base]))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -21,31 +19,4 @@
   (println (next s3))
 
   (def me (base/newMapEntry 1 2))
-  (println (key me) (val me))
-
-  (def b (buffer/newBuffer 8))
-  (println (buffer/-capacity b))
-  (println (buffer/-position b))
-  (println (buffer/-limit b))
-  (buffer/-position! b 4)
-  (buffer/-limit! b 6)
-  (println (buffer/-position b))
-  (println (buffer/-limit b))
-  (buffer/-clear! b)
-  (println (buffer/-position b))
-  (println (buffer/-limit b))
-  (buffer/-position! b 4)
-  (buffer/-flip! b)
-  (println (buffer/-position b))
-  (println (buffer/-limit b))
-  (buffer/-position! b 2)
-  (buffer/-rewind! b)
-  (println (buffer/-position b))
-  (println (buffer/-limit b))
-  (buffer/-clear! b)
-  (buffer/-write! b 42 octet/int32)
-  (println (buffer/-position b))
-  (buffer/-flip! b)
-  (println (buffer/-read! b octet/int32))
-  (println (buffer/-position b))
-  )
+  (println (key me) (val me)))
