@@ -12,6 +12,7 @@
 (defprotocol aa-buffer
   (-array [this])
   (-array-offset [this])
+  (-as-read-only-buffer [this])
   (-capacity [this])
   (-clear! [this])
   (-duplicate [this])
@@ -23,6 +24,7 @@
   (-position! [this np])
   (-read! [this spec])
   (-read-at [this spec offset])
+  (-read-only? [this])
   (-remaining [this])
   (-remaining? [this])
   (-reset! [this])
@@ -37,6 +39,7 @@
 #?(:clj (extend-type ByteBuffer aa-buffer
           (-array [this] (.array this))
           (-array-offset [this] (.arrayOffset this))
+          (-as-read-only-buffer [this] (.asReadOnlyBuffer this))
           (-capacity [this] (.capacity this))
           (-duplicate [this] (.duplicate this))
           (-position [this] (.position this))
@@ -50,6 +53,7 @@
           (-remaining? [this] (.hasRemaining this))
           (-mark! [this] (.mark this))
           (-reset! [this] (.reset this))
+          (-read-only? [this] (.isReadOnly this))
           (-write!
             [this data spec]
             (let [p (.position this)
@@ -72,6 +76,7 @@
                           o c ro b] aa-buffer
            (-array [this] b)
            (-array-offset [this] o)
+           (-as-read-only-buffer [this] (->aabuf m p l o c true b))
            (-capacity [this] (aget b "byteLength"))
            (-position [this] p)
            (-position! [this np]
@@ -102,6 +107,7 @@
              (if (= m -1)
                (throw "invalid mark")
                (set! p m)))
+           (-read-only? [this] ro)
            (-write!
              [this data spec]
              (if ro (throw "read only"))
