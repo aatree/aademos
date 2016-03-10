@@ -24,3 +24,5 @@ Exercises [durable-cells](https://github.com/aatree/durable-cells),
 which uses IndexedDB to persist Hoplon cells.
 1. [byte-array](https://github.com/aatree/aademos/tree/master/byte-array) -
 Exercises [bytes](https://github.com/aatree/aautil#bytes).
+1. [buffers](https://github.com/aatree/aademos/tree/master/buffers) -
+Exercises [buffer](https://github.com/aatree/aautil#buffer).

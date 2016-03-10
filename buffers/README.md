@@ -1,4 +1,4 @@
-# checksum demo
+# buffers demo
 
 This project exercises cs256 in the [aautil repository][1].
 
