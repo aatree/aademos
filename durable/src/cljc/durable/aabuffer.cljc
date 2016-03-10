@@ -77,7 +77,7 @@
            (-array [this] b)
            (-array-offset [this] o)
            (-as-read-only-buffer [this] (->aabuf m p l o c true b))
-           (-capacity [this] (aget b "byteLength"))
+           (-capacity [this] c)
            (-position [this] p)
            (-position! [this np]
              (if (or (< np 0) (> np l))
@@ -144,5 +144,15 @@
                data))))
 
 (defn newBuffer [size]
-#?(:clj (buf/allocate size)
+#?(:clj (ByteBuffer/allocate size)
    :cljs (->aabuf -1 0 size 0 size false (buf/allocate size))))
+
+(defn wrap
+  ([array]
+    #?(:clj (ByteBuffer/wrap array)
+       :cljs ((let [size (aget array "byteLength")]
+                ->aabuf -1 0 size 0 size false array))))
+  ([array offset length]
+    #?(:clj (ByteBuffer/wrap array offset length)
+       :cljs ((let [size (aget array "byteLength")]
+                ->aabuf -1 offset (offset + length) 0 size false array)))))
