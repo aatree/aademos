@@ -10,8 +10,11 @@
     (spec/size spec)))
 
 (defprotocol aa-buffer
+  (-array [this])
+  (-array-offset [this])
   (-capacity [this])
   (-clear! [this])
+  (-duplicate [this])
   (-flip! [this])
   (-limit [this])
   (-limit! [this nl])
@@ -29,9 +32,13 @@
   (-write-at!
     [this data spec offset]))
 
-#?(:clj (extend-type ByteBuffer
-          aa-buffer
+(declare ->aabuf)
+
+#?(:clj (extend-type ByteBuffer aa-buffer
+          (-array [this] (.array this))
+          (-array-offset [this] (.arrayOffset this))
           (-capacity [this] (.capacity this))
+          (-duplicate [this] (.duplicate this))
           (-position [this] (.position this))
           (-position! [this np] (.position this np))
           (-limit [this] (.limit this))
@@ -62,8 +69,9 @@
    :cljs (deftype aabuf  [^{:volatile-mutable true} m
                           ^{:volatile-mutable true} p
                           ^{:volatile-mutable true} l
-                          o c ro b]
-           aa-buffer
+                          o c ro b] aa-buffer
+           (-array [this] b)
+           (-array-offset [this] o)
            (-capacity [this] (aget b "byteLength"))
            (-position [this] p)
            (-position! [this np]
@@ -84,6 +92,7 @@
                    (-position! this l))))
              b)
            (-clear! [this] (set! m -1) (set! p 0) (set! l c) b)
+           (-duplicate [this] (->aabuf m p l o c ro b))
            (-flip! [this] (set! l p) (set! p 0) b)
            (-rewind! [this] (set! p 0) b)
            (-remaining [this] (- l p))
