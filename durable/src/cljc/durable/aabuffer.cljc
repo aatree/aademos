@@ -29,6 +29,7 @@
   (-remaining? [this])
   (-reset! [this])
   (-rewind! [this])
+  (-slice [this])
   (-write!
     [this data spec])
   (-write-at!
@@ -42,6 +43,7 @@
           (-as-read-only-buffer [this] (.asReadOnlyBuffer this))
           (-capacity [this] (.capacity this))
           (-duplicate [this] (.duplicate this))
+          (-slice [this] (.slice this))
           (-position [this] (.position this))
           (-position! [this np] (.position this np))
           (-limit [this] (.limit this))
@@ -98,6 +100,7 @@
              b)
            (-clear! [this] (set! m -1) (set! p 0) (set! l c) b)
            (-duplicate [this] (->aabuf m p l o c ro b))
+           (-slice [this] (->aabuf -1 0 (- l p) (+ o p) (- l p) ro b))
            (-flip! [this] (set! l p) (set! p 0) b)
            (-rewind! [this] (set! p 0) b)
            (-remaining [this] (- l p))
