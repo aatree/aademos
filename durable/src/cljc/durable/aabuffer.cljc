@@ -11,23 +11,23 @@
 
 (defprotocol aa-buffer
   (-capacity [this])
-  (-position [this])
-  (-position! [this np])
-  (-limit [this])
-  (-limit! [this nl])
   (-clear! [this])
   (-flip! [this])
-  (-rewind! [this])
+  (-limit [this])
+  (-limit! [this nl])
+  (-mark! [this])
+  (-position [this])
+  (-position! [this np])
+  (-read! [this spec])
+  (-read-at [this spec offset])
   (-remaining [this])
   (-remaining? [this])
-  (-mark! [this])
   (-reset! [this])
+  (-rewind! [this])
   (-write!
     [this data spec])
   (-write-at!
-    [this data spec offset])
-  (-read! [this spec])
-  (-read-at [this spec offset]))
+    [this data spec offset]))
 
 #?(:clj (extend-type ByteBuffer
           aa-buffer
@@ -62,7 +62,7 @@
    :cljs (deftype aabuf  [^{:volatile-mutable true} m
                           ^{:volatile-mutable true} p
                           ^{:volatile-mutable true} l
-                          o c b]
+                          o c ro b]
            aa-buffer
            (-capacity [this] (aget b "byteLength"))
            (-position [this] p)
@@ -95,6 +95,7 @@
                (set! p m)))
            (-write!
              [this data spec]
+             (if ro (throw "read only"))
              (let [dl (data-size spec data)
                    np (+ dl p)]
                (if (> np l)
@@ -104,6 +105,7 @@
                dl))
            (-write-at!
              [this data spec offset]
+             (if ro (throw "read only"))
              (let [dl (data-size spec data)
                    np (+ offset dl)]
                (if (> np l)
@@ -128,4 +130,4 @@
 
 (defn newBuffer [size]
 #?(:clj (buf/allocate size)
-   :cljs (->aabuf -1 0 size 0 size (buf/allocate size))))
+   :cljs (->aabuf -1 0 size 0 size false (buf/allocate size))))
