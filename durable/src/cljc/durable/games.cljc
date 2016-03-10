@@ -1,7 +1,7 @@
 (ns durable.games
   (:require [durable.vec-it :as vec-it]
             [durable.base :as base]
-            [durable.aabuffer :as buffer]
+            [aautil.buffer :as buffer]
             [octet.core :as octet]))
 
 #?(:clj
