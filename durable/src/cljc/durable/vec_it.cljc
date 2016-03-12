@@ -1,6 +1,5 @@
 (ns durable.vec-it
   (:require [durable.base :as base])
-  #?(:clj (:require [durable.CountedSequence :as cseq]))
   #?(:clj (:import (clojure.lang Counted)
                    (java.util Iterator)
                    (durable CountedSequence))))
