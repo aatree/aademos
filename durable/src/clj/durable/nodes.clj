@@ -1,9 +1,10 @@
 (ns durable.nodes
-  (:require   [durable.base :as base])
+  (:require   [durable.base :as base]
+              [aautil.buffer :as buffer]
+              [octet.core :as spec])
   (:import (clojure.lang Counted)
            (java.util Iterator)
-           (durable CountedSequence)
-           (java.nio CharBuffer ByteBuffer)))
+           (durable CountedSequence)))
 
 (set! *warn-on-reflection* true)
 
@@ -39,8 +40,8 @@
   (-qualified [this t2 opts])
   (-sval [this inode opts])
   (-valueLength [this node opts])
-  (-deserialize [this node ^java.nio.ByteBuffer buffer opts])
-  (-writeValue [this node ^java.nio.ByteBuffer buffer opts])
+  (-deserialize [this node buffer opts])
+  (-writeValue [this node buffer opts])
   (-valueNode [this node opts]))
 
 (deftype noded-state [node opts meta])
@@ -518,7 +519,7 @@
 (defn get-buffer-atom [wrapper-node]
   (-bufferAtom wrapper-node))
 
-(defn ^java.nio.ByteBuffer get-buffer [wrapper-node]
+(defn get-buffer [wrapper-node]
   @(-bufferAtom wrapper-node))
 
 (defn str-val [factory wrapper-node opts]
@@ -534,14 +535,9 @@
   (let [map-entry (-getT2 inode opts)]
     (pr-str (key map-entry))))
 
-(defn deserialize-sval [this wrapper-node ^ByteBuffer bb opts]
-  (let [svl (.getInt bb)
-        ^CharBuffer cb (.asCharBuffer bb)
-        svc (char-array svl)
-        _ (.get cb svc)
-        sv (String. svc)
-        _ (reset! (-svalAtom wrapper-node) sv)
-        _ (.position bb (+ (.position bb) (* 2 svl)))]
+(defn deserialize-sval [this wrapper-node bb opts]
+  (let [sv (buffer/-read! bb spec/string*)]
+    (reset! (-svalAtom wrapper-node) sv)
     (read-string opts sv)))
 
 (defn default-valueLength [this wrapper-node opts]
@@ -550,14 +546,10 @@
 
 (defn default-write-value [f
                            wrapper-node
-                           ^ByteBuffer buffer
+                           buffer
                            opts]
-  (let [^String sv (str-val f wrapper-node opts)
-        svl (count sv)
-        _ (.putInt buffer svl)
-        ^CharBuffer cb (.asCharBuffer buffer)]
-    (.put cb sv)
-    (.position buffer (+ (* 2 svl) (.position buffer)))))
+  (let [^String sv (str-val f wrapper-node opts)]
+    (buffer/-write! buffer sv spec/string*)))
 
 (def vector-context
   (let [class-atom (atom {})
