@@ -1,12 +1,13 @@
 (ns durable.nodes
-  (:require   [durable.base :as base]
-              [aautil.buffer :as buffer]
-              [octet.core :as spec])
-  (:import (clojure.lang Counted)
-           (java.util Iterator)
-           (durable CountedSequence)))
+  (:require [durable.base :as base]
+            [aautil.buffer :as buffer]
+            [octet.core :as spec])
+  #?(:clj (:import (clojure.lang Counted)
+                   (java.util Iterator)
+                   (durable CountedSequence))))
 
-(set! *warn-on-reflection* true)
+#?(:clj
+   (set! *warn-on-reflection* true))
 
 (defprotocol INoded
   (-getState [this]))
@@ -186,10 +187,22 @@
           t)))))
 
 (deftype counted-iterator
-  [node
-   ^{:volatile-mutable true} ndx
-   ^Long cnt
-   opts]
+  [node ^{:volatile-mutable true} ndx cnt opts]
+
+  #?@(:cljs (Object
+              (hasNext [this]
+                       (< ndx cnt))
+              (next [this]
+                    (let [i ndx]
+                      (set! ndx (base/xibumpIndex this i))
+                      (base/xifetch this i))))
+      :clj (Iterator
+             (hasNext [this]
+               (< ndx cnt))
+             (next [this]
+               (let [i ndx]
+                 (set! ndx (base/xibumpIndex this i))
+                 (base/xifetch this i)))))
 
   base/XIterator
   (xicount [this index]
@@ -201,17 +214,12 @@
   (xifetch [this index]
     (nth-t2 node index opts))
 
-  Counted
-  (count [this]
-    (base/xicount this ndx))
-
-  Iterator
-  (hasNext [this]
-    (< ndx cnt))
-  (next [this]
-    (let [i ndx]
-      (set! ndx (base/xibumpIndex this i))
-      (base/xifetch this i))))
+  #?@(:cljs(ICounted
+             (-count [this]
+                     (base/xicount this ndx)))
+      :clj(Counted
+            (count [this]
+              (base/xicount this ndx)))))
 
 (defn ^counted-iterator new-counted-iterator
   ([node opts]
@@ -231,9 +239,22 @@
      (create-counted-sequence it (base/xiindex it) identity))))
 
 (deftype counted-reverse-iterator
-  [node
-   ^{:volatile-mutable true} ndx
-   opts]
+  [node ^{:volatile-mutable true} ndx opts]
+
+  #?@(:cljs (Object
+              (hasNext [this]
+                       (>= ndx 0))
+              (next [this]
+                    (let [i ndx]
+                      (set! ndx (base/xibumpIndex this i))
+                      (base/xifetch this i))))
+      :clj (Iterator
+             (hasNext [this]
+               (>= ndx 0))
+             (next [this]
+               (let [i ndx]
+                 (set! ndx (base/xibumpIndex this i))
+                 (base/xifetch this i)))))
 
   base/XIterator
   (xicount [this index]
@@ -245,17 +266,12 @@
   (xifetch [this index]
     (nth-t2 node index opts))
 
-  Counted
-  (count [this]
-    (base/xicount this ndx))
-
-  Iterator
-  (hasNext [this]
-    (>= ndx 0))
-  (next [this]
-    (let [i ndx]
-      (set! ndx (base/xibumpIndex this i))
-      (base/xifetch this i))))
+  #?@(:cljs(ICounted
+             (-count [this]
+                     (base/xicount this ndx)))
+      :clj(Counted
+            (count [this]
+              (base/xicount this ndx)))))
 
 (defn ^counted-reverse-iterator new-counted-reverse-iterator
   ([node opts]
