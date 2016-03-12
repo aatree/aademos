@@ -1,11 +1,9 @@
 (ns durable.nodes
-  (:require   [durable.base :as base]
-              [durable.CountedSequence :refer :all])
+  (:require   [durable.base :as base])
   (:import (clojure.lang Counted)
-           (java.util Iterator Comparator)
+           (java.util Iterator)
            (durable CountedSequence)
-           (java.nio CharBuffer ByteBuffer)
-           ))
+           (java.nio CharBuffer ByteBuffer)))
 
 (set! *warn-on-reflection* true)
 
@@ -305,8 +303,8 @@
 
 (defn value-of [e] (val e))
 
-(defn map-cmpr [this x ^Comparator comparator opts]
-  (.compare comparator x (key (get-entry this opts))))
+(defn map-cmpr [this x comparator opts]
+  (comparator x (key (get-entry this opts))))
 
 (defn resource-cmpr [this x opts] (map-cmpr this x (:comparator opts) opts))
 

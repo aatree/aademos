@@ -1,6 +1,6 @@
 (ns durable.vec-it
   (:require [durable.base :as base])
-  #?(:clj (:require [durable.CountedSequence :refer :all]))
+  #?(:clj (:require [durable.CountedSequence :as cseq]))
   #?(:clj (:import (clojure.lang Counted)
                    (java.util Iterator)
                    (durable CountedSequence))))
@@ -49,18 +49,14 @@
   ([v i]
    (->vector-iterator v i)))
 
-#?(:clj (defn ^CountedSequence new-counted-seq
-  ([v]
-   (let [it (new-vector-iterator v)]
-     (CountedSequence/create it (base/xiindex it) identity)))
-  ([v i]
-   (let [it (new-vector-iterator v i)]
-     (CountedSequence/create it (base/xiindex it) identity)))))
+(defn create-counted-sequence [iter initialIndex styp]
+  #?(:clj (CountedSequence/create iter initialIndex styp)
+     :cljs (base/create iter initialIndex styp)))
 
-#?(:cljs (defn ^base/CountedSequence new-counted-seq
+(defn new-counted-seq
   ([v]
    (let [it (new-vector-iterator v)]
-     (base/create it (base/xiindex it) identity)))
+     (create-counted-sequence it (base/xiindex it) identity)))
   ([v i]
    (let [it (new-vector-iterator v i)]
-     (base/create it (base/xiindex it) identity)))))
+     (create-counted-sequence it (base/xiindex it) identity))))
