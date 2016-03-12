@@ -218,13 +218,16 @@
   ([node i opts]
    (->counted-iterator node i (-getCnt node opts) opts)))
 
-(defn ^CountedSequence new-counted-seq
+(defn create-counted-sequence [iter initialIndex styp]
+  (CountedSequence/create iter initialIndex styp))
+
+(defn new-counted-seq
   ([node opts]
    (let [it (new-counted-iterator node opts)]
-     (CountedSequence/create it (base/xiindex it) identity)))
+     (create-counted-sequence it (base/xiindex it) identity)))
   ([node i opts]
    (let [it (new-counted-iterator node i opts)]
-     (CountedSequence/create it (base/xiindex it) identity))))
+     (create-counted-sequence it (base/xiindex it) identity))))
 
 (deftype counted-reverse-iterator
   [node
@@ -259,13 +262,13 @@
   ([node i opts]
    (->counted-reverse-iterator node i opts)))
 
-(defn ^CountedSequence new-counted-reverse-seq
+(defn new-counted-reverse-seq
   ([node opts]
    (let [it (new-counted-reverse-iterator node opts)]
-     (CountedSequence/create it (base/xiindex it) identity)))
+     (create-counted-sequence it (base/xiindex it) identity)))
   ([node i opts]
    (let [it (new-counted-reverse-iterator node i opts)]
-     (CountedSequence/create it (base/xiindex it) identity))))
+     (create-counted-sequence it (base/xiindex it) identity))))
 
 (defn vector-add [n v i opts]
   (if (empty-node? n)
@@ -326,35 +329,35 @@
   ([node x opts]
    (->counted-iterator node (map-index-of node x opts) (-getCnt node opts) opts)))
 
-(defn ^CountedSequence new-map-entry-seq
+(defn new-map-entry-seq
   ([node x opts]
    (let [it (new-map-entry-iterator node x opts)]
-     (CountedSequence/create it (base/xiindex it) identity))))
+     (create-counted-sequence it (base/xiindex it) identity))))
 
-(defn ^CountedSequence new-map-key-seq [node opts]
+(defn new-map-key-seq [node opts]
   (let [it (new-counted-iterator node opts)]
-    (CountedSequence/create it (base/xiindex it) key-of)))
+    (create-counted-sequence it (base/xiindex it) key-of)))
 
-(defn ^CountedSequence new-map-value-seq [node opts]
+(defn new-map-value-seq [node opts]
   (let [it (new-counted-iterator node opts)]
-    (CountedSequence/create it (base/xiindex it) value-of)))
+    (create-counted-sequence it (base/xiindex it) value-of)))
 
 (defn ^counted-reverse-iterator new-map-entry-reverse-iterator
   ([node x opts]
    (->counted-reverse-iterator node (map-index-of node x opts) opts)))
 
-(defn ^CountedSequence new-map-entry-reverse-seq
+(defn new-map-entry-reverse-seq
   ([node x opts]
    (let [it (new-map-entry-reverse-iterator node x opts)]
-     (CountedSequence/create it (base/xiindex it) identity))))
+     (create-counted-sequence it (base/xiindex it) identity))))
 
-(defn ^CountedSequence new-map-key-reverse-seq [node opts]
+(defn new-map-key-reverse-seq [node opts]
   (let [it (new-counted-reverse-iterator node opts)]
-    (CountedSequence/create it (base/xiindex it) key-of)))
+    (create-counted-sequence it (base/xiindex it) key-of)))
 
-(defn ^CountedSequence new-map-value-reverse-seq [node opts]
+(defn new-map-value-reverse-seq [node opts]
   (let [it (new-counted-reverse-iterator node opts)]
-    (CountedSequence/create it (base/xiindex it) value-of)))
+    (create-counted-sequence it (base/xiindex it) value-of)))
 
 (defn map-insert [this t-2 opts]
   (if (empty-node? this)
