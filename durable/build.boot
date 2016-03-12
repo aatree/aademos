@@ -18,7 +18,7 @@
   '[pandeiro.boot-http       :refer [serve]])
 
 (task-options!
-  aot {:namespace '#{durable.CountedSequence durable.nodes}})
+  aot {:namespace '#{durable.CountedSequence}})
 
 (deftask test-it
    "Setup, compile and run the tests."
@@ -26,7 +26,7 @@
    (comp
     (aot)
 ;     (show :fileset true)
-     (run-tests :namespaces '#{durable.fun-test durable.nodes-test})
+     (run-tests :namespaces '#{durable.fun-test})
      ))
 
 (deftask dev

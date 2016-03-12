@@ -76,13 +76,13 @@
   (-first [_] (styp (xifetch iter i)))
   (-rest [_]
     (if (< 1 (xicount iter i))
-      (CountedSequence. iter (inc i) styp nil)
+      (CountedSequence. iter (xibumpIndex iter i) styp nil)
       (list)))
 
   INext
   (-next [_]
     (if (< 1 (xicount iter i))
-      (CountedSequence. iter (inc i) styp nil)
+      (CountedSequence. iter (xibumpIndex iter i) styp nil)
       nil))
 
   ICounted

@@ -1,7 +1,17 @@
 (ns durable.nodes
-  (:require [durable.base :as base]
-            [aautil.buffer :as buffer]
-            [octet.core :as spec])
+  #?(:clj
+           (:require [durable.base :as base]
+                     [aautil.buffer :as buffer]
+                     [octet.core :as spec]
+                     [clojure.string :as str]
+                     [clojure.edn :refer [read-string]])
+     :cljs (:require [durable.base :as base]
+             [aautil.buffer :as buffer]
+             [octet.core :as spec]
+             [clojure.string :as str]
+             [cljs.reader :refer [read-string]]))
+  #?(:clj
+     (:refer-clojure :exclude [read-string]))
   #?(:clj (:import (clojure.lang Counted)
                    (java.util Iterator)
                    (durable CountedSequence))))
@@ -13,12 +23,12 @@
   (-getState [this]))
 
 (defprotocol INode
-  (-newNode [this t2 ^Long level left right ^Long cnt opts])
+  (-newNode [this t2 level left right cnt opts])
   (-getT2 [this opts])
-  (^Long -getLevel [this opts])
+  (-getLevel [this opts])
   (-getLeft [this opts])
   (-getRight [this opts])
-  (^Long -getCnt [this opts])
+  (-getCnt [this opts])
   (-getNada [this]))
 
 (defprotocol WrapperNode
@@ -30,18 +40,18 @@
   (-nodeWrite [this buffer opts]))
 
 (defprotocol AAContext
-  (-classAtom [this])
+  (-typeAtom [this])
   (-getDefaultFactory [this])
   (-setDefaultFactory [this factory])
   (-refineInstance [this inst]))
 
 (defprotocol IFactory
   (-factoryId [this])
-  (-instanceClass [this])
+  (-instanceType [this])
   (-qualified [this t2 opts])
   (-sval [this inode opts])
   (-valueLength [this node opts])
-  (-deserialize [this node buffer opts])
+  (-deserialize [this node buffer])
   (-writeValue [this node buffer opts])
   (-valueNode [this node opts]))
 
@@ -86,7 +96,7 @@
     (empty-node this opts)
     (-getRight this opts)))
 
-(defn ^Long node-count [this opts]
+(defn node-count [this opts]
   (if (empty-node? this)
     0
     (-getCnt this opts)))
@@ -94,10 +104,10 @@
 (defn revise [this args opts]
   (let [m (apply array-map args)
         t-2 (get m :t2 (-getT2 this opts))
-        ^Long lev (get m :level (-getLevel this opts))
+        lev (get m :level (-getLevel this opts))
         l (get m :left (left-node this opts))
         r (get m :right (right-node this opts))
-        ^Long c (+ 1 (node-count l opts) (node-count r opts))]
+        c (+ 1 (node-count l opts) (node-count r opts))]
     (if (and (identical? t-2 (-getT2 this opts))
              (= lev (-getLevel this opts))
              (identical? l (left-node this opts))
@@ -149,7 +159,8 @@
 
 (defn nth-t2 [this i opts]
   (if (empty-node? this)
-    (throw (IndexOutOfBoundsException.))
+    #?(:clj (throw (IndexOutOfBoundsException.))
+       :cljs (throw "IndexOutOfBoundsException"))
     (let [l (left-node this opts)
           p (-getCnt l opts)]
       (cond
@@ -228,7 +239,8 @@
    (->counted-iterator node i (-getCnt node opts) opts)))
 
 (defn create-counted-sequence [iter initialIndex styp]
-  (CountedSequence/create iter initialIndex styp))
+  #?(:clj (CountedSequence/create iter initialIndex styp)
+     :cljs (base/create iter initialIndex styp)))
 
 (defn new-counted-seq
   ([node opts]
@@ -264,7 +276,9 @@
   (xibumpIndex [this index]
     (- index 1))
   (xifetch [this index]
-    (nth-t2 node index opts))
+    (let [v (nth-t2 node index opts)]
+      v
+    ))
 
   #?@(:cljs(ICounted
              (-count [this]
@@ -433,7 +447,7 @@
 (declare ->Node
          create-empty-node)
 
-(deftype Node [t2 ^Long level left right ^Long cnt]
+(deftype Node [t2 level left right cnt]
 
   INode
 
@@ -472,7 +486,7 @@
 (defn pnodev [this dsc opts]
   (println dsc (snodev this opts)))
 
-(deftype factory-registry [by-id-atom by-class-atom])
+(deftype factory-registry [by-id-atom by-type-atom])
 
 (defn ^factory-registry create-factory-registry
   ([]
@@ -480,7 +494,7 @@
                       (atom {})))
   ([^factory-registry fregistry]
    (factory-registry. (atom @(.-by_id_atom fregistry))
-                      (atom @(.by_class_atom fregistry)))))
+                      (atom @(.by_type_atom fregistry)))))
 
 (def default-factory-registry (create-factory-registry))
 
@@ -493,35 +507,37 @@
         (-getDefaultFactory context))
       f)))
 
-(defn register-class [aacontext factory]
-  (let [clss (-instanceClass factory)]
+(defn register-type [aacontext factory]
+  (let [clss (-instanceType factory)]
     (if clss
-      (swap! (-classAtom aacontext) assoc clss factory))))
+      (swap! (-typeAtom aacontext) assoc clss factory))))
 
-(defn factory-for-class [aacontext clss opts]
-  (let [f (@(-classAtom aacontext) clss)]
+(defn factory-for-type [aacontext clss opts]
+  (let [f (@(-typeAtom aacontext) clss)]
     (if (nil? f)
       (let [context (:aacontext opts)]
         (-getDefaultFactory context))
       f)))
 
-(defn className [^Class c] (.getName c))
+(defn typeName [t] (str t))
 
 (defn factory-for-instance [inst opts]
   (let [aacontext (:aacontext opts)
         inst (-refineInstance aacontext inst)
-        clss (class inst)
-        f (factory-for-class aacontext clss opts)
+        clss (type inst)
+        f (factory-for-type aacontext clss opts)
         q (-qualified f inst opts)]
     (if (nil? q)
-      (throw (UnsupportedOperationException. (str "Unknown qualified durable class: " (className clss))))
+      (let [m (str "Unknown qualified durable type: " (typeName clss))]
+        #?(:clj (throw (UnsupportedOperationException. m))
+           :cljs (throw (str "UnsupportedOperationException " m))))
       q)))
 
 (defn register-factory [^factory-registry fregistry
                         aacontext
                         factory]
   (swap! (.-by-id-atom fregistry) assoc (-factoryId factory) factory)
-  (register-class aacontext factory))
+  (register-type aacontext factory))
 
 (defn node-byte-length [wrapper-node opts]
   (-nodeByteLength wrapper-node opts))
@@ -551,10 +567,10 @@
   (let [map-entry (-getT2 inode opts)]
     (pr-str (key map-entry))))
 
-(defn deserialize-sval [this wrapper-node bb opts]
+(defn deserialize-sval [this wrapper-node bb]
   (let [sv (buffer/-read! bb spec/string*)]
     (reset! (-svalAtom wrapper-node) sv)
-    (read-string opts sv)))
+    (read-string sv)))
 
 (defn default-valueLength [this wrapper-node opts]
   (+ 4                                                      ;sval length
@@ -568,10 +584,10 @@
     (buffer/-write! buffer sv spec/string*)))
 
 (def vector-context
-  (let [class-atom (atom {})
+  (let [type-atom (atom {})
         factory-atom (atom nil)]
     (reify AAContext
-      (-classAtom [this] class-atom)
+      (-typeAtom [this] type-atom)
       (-getDefaultFactory [this] @factory-atom)
       (-setDefaultFactory
         [this f]
@@ -579,10 +595,10 @@
       (-refineInstance [this inst] inst))))
 
 (def map-context
-  (let [class-atom (atom {})
+  (let [type-atom (atom {})
         factory-atom (atom nil)]
     (reify AAContext
-      (-classAtom [this] class-atom)
+      (-typeAtom [this] type-atom)
       (-getDefaultFactory [this] @factory-atom)
       (-setDefaultFactory
         [this f]
@@ -592,10 +608,10 @@
           (val map-entry))))))
 
 (def set-context
-  (let [class-atom (atom {})
+  (let [type-atom (atom {})
         factory-atom (atom nil)]
     (reify AAContext
-      (-classAtom [this] class-atom)
+      (-typeAtom [this] type-atom)
       (-getDefaultFactory [this] @factory-atom)
       (-setDefaultFactory
         [this f]
@@ -621,7 +637,7 @@
   nil
   (reify IFactory
     (-factoryId [this] (byte \n))                            ;;;;;;;;;;;;;;;;;;;;;;;; n - nil content
-    (-instanceClass [this] nil)
+    (-instanceType [this] nil)
     (-qualified [this t2 opts] this)
     (-valueNode [this node opts] nil)))
 
@@ -630,14 +646,14 @@
   vector-context
   (reify IFactory
     (-factoryId [this] (byte \e))                            ;;;;;;;;;;;;;;;;;;;;;; e - vector default factory
-    (-instanceClass [this] nil)
+    (-instanceType [this] nil)
     (-qualified [this t2 opts] this)
     (-sval [this inode opts]
       (default-sval this inode opts))
     (-valueLength [this node opts]
       (default-valueLength this node opts))
-    (-deserialize [this node bb opts]
-      (deserialize-sval this node bb opts))
+    (-deserialize [this node bb]
+      (deserialize-sval this node bb))
     (-writeValue [this node buffer opts]
       (default-write-value this node buffer opts))
     (-valueNode [this node opts] nil)))
@@ -653,14 +669,14 @@
   map-context
   (reify IFactory
     (-factoryId [this] (byte \p))                            ;;;;;;;;;;;;;;;;;;;;;;;;;;; p - map default factory
-    (-instanceClass [this] nil)
+    (-instanceType [this] nil)
     (-qualified [this t2 opts] this)
     (-sval [this inode opts]
       (default-sval this inode opts))
     (-valueLength [this node opts]
       (default-valueLength this node opts))
-    (-deserialize [this node bb opts]
-      (let [v (deserialize-sval this node bb opts)
+    (-deserialize [this node bb]
+      (let [v (deserialize-sval this node bb)
             t2 (base/newMapEntry (get v 0) (get v 1))]
         t2))
     (-writeValue [this node buffer opts]
@@ -678,14 +694,14 @@
   set-context
   (reify IFactory
     (-factoryId [this] (byte \q))                            ;;;;;;;;;;;;;;;;;;;;;;;;;;; q - set default factory
-    (-instanceClass [this] nil)
+    (-instanceType [this] nil)
     (-qualified [this t2 opts] this)
     (-sval [this inode opts]
       (key-sval this inode opts))
     (-valueLength [this node opts]
       (default-valueLength this node opts))
-    (-deserialize [this node bb opts]
-      (let [k (deserialize-sval this node bb opts)]
+    (-deserialize [this node bb]
+      (let [k (deserialize-sval this node bb)]
         (base/newMapEntry k k)))
     (-writeValue [this node buffer opts]
       (default-write-value this node buffer opts))

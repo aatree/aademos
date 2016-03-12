@@ -39,7 +39,7 @@
 
 (defn -first [^CountedSequence this]
   (let [s (.-state this)]
-    (base/xifetch (iter s) (:ndx s))))
+    ((:styp s) (base/xifetch (iter s) (:ndx s)))))
 
 (defn -next [^CountedSequence this]
   (let [s (.-state this)
