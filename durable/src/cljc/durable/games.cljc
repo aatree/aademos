@@ -48,7 +48,7 @@
 
   (def m13 (nodes/map-insert m1 (base/newMapEntry "3" 1003) {:comparator compare}))
   (nodes/pnodev m13 "m13" {})
-  (println "m13 level" (nodes/-getLevel m13 {}))
+  (println "m13 level" (base/-getLevel m13 {}))
   (nodes/pnodev (nodes/map-del m13 "1" {:comparator compare}) "m13 - 1" {})
   (nodes/pnodev (nodes/map-del (nodes/map-del m13 "1" {:comparator compare}) "3" {:comparator compare})
                 "m13 - -"

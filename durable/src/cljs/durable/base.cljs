@@ -134,4 +134,16 @@
     (CountedSequence. iter initialIndex styp nil)
     nil))
 
+(defprotocol INoded
+  (-getState [this]))
+
+(defprotocol INode
+  (-newNode [this t2 level left right cnt opts])
+  (-getT2 [this opts])
+  (-getLevel [this opts])
+  (-getLeft [this opts])
+  (-getRight [this opts])
+  (-getCnt [this opts])
+  (-getNada [this]))
+
 (defn newMapEntry [k v] [k v])
