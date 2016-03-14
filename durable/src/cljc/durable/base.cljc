@@ -1,7 +1,7 @@
 (ns durable.base
-  (:import (clojure.lang MapEntry)))
+  #?(:clj (:import (clojure.lang MapEntry))))
 
-(set! *warn-on-reflection* true)
+#?(:clj (set! *warn-on-reflection* true))
 
 (defprotocol XIterator
   (^Long xiindex [this])
@@ -21,10 +21,11 @@
   (-getCnt [this opts])
   (-getNada [this])
   (-new-counted-iterator [this opts])
-  (-new-counted-seq [this opts])
-  )
+  (-new-counted-seq [this opts]))
 
-(defn newMapEntry [k v] (MapEntry. k v))
+#?(:clj (defn newMapEntry [k v] (MapEntry. k v)))
+
+#?(:cljs (defn newMapEntry [k v] [k v]))
 
 (deftype noded-state [node opts meta])
 
