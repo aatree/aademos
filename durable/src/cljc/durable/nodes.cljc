@@ -6,6 +6,7 @@
                      [clojure.string :as str]
                      [clojure.edn :refer [read-string]])
      :cljs (:require [durable.base :as base]
+             [durable.CountedSequence :as CountedSequence]
              [aautil.buffer :as buffer]
              [octet.core :as spec]
              [clojure.string :as str]
@@ -195,8 +196,7 @@
    (->counted-iterator node i (base/-getCnt node opts) opts)))
 
 (defn create-counted-sequence [iter initialIndex styp]
-  #?(:clj (CountedSequence/create iter initialIndex styp)
-     :cljs (base/create iter initialIndex styp)))
+  (CountedSequence/create iter initialIndex styp))
 
 (defn new-counted-seq
   ([node opts]
