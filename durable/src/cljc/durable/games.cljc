@@ -25,20 +25,20 @@
   (def v0 nodes/emptyNode)
   (nodes/pnodev v0 "v0" {})
 
-  (def v1 (nodes/vector-add v0 1001 0 {}))
+  (def v1 (base/vector-add v0 1001 0 {}))
   (nodes/pnodev v1 "v1" {})
 
-  (def v01 (nodes/vector-add v1 1000 0 {}))
+  (def v01 (base/vector-add v1 1000 0 {}))
   (nodes/pnodev v01 "v01" {})
 
-  (def v012 (nodes/vector-add v01 1002 2 {}))
+  (def v012 (base/vector-add v01 1002 2 {}))
   (nodes/pnodev v012 "v012" {})
 
-  (nodes/pnodev (nodes/deln v012 0 {}) "v012 - 0" {})
+  (nodes/pnodev (base/deln v012 0 {}) "v012 - 0" {})
 
-  (nodes/pnodev (nodes/deln v012 1 {}) "v012 - 1" {})
+  (nodes/pnodev (base/deln v012 1 {}) "v012 - 1" {})
 
-  (nodes/pnodev (nodes/deln v012 2 {}) "v012 - 2" {})
+  (nodes/pnodev (base/deln v012 2 {}) "v012 - 2" {})
 
   (def m0 nodes/emptyNode)
 

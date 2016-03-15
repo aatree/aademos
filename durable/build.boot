@@ -18,7 +18,7 @@
   '[pandeiro.boot-http       :refer [serve]])
 
 (task-options!
-  aot {:namespace '#{durable.CountedSequence}})
+  aot {:namespace '#{durable.CountedSequence durable.AAVector}})
 
 (deftask test-it
    "Setup, compile and run the tests."

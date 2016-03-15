@@ -1,19 +1,21 @@
 (ns durable.CountedSequence
-  #?(:clj(:gen-class
-    :main false
-    :extends clojure.lang.ASeq
-    :implements [clojure.lang.Counted]
-    :constructors {[java.util.Iterator Long clojure.lang.IFn]
-                   []
-                   [clojure.lang.IPersistentMap Object]
-                   [clojure.lang.IPersistentMap]}
-    :init init
-    :state state
-    :methods [^:static [create [java.util.Iterator Long clojure.lang.IFn] Object]]))
+  #?(:clj
+     (:gen-class
+       :main false
+       :extends clojure.lang.ASeq
+       :implements [clojure.lang.Counted]
+       :constructors {[java.util.Iterator Long clojure.lang.IFn]
+                      []
+                      [clojure.lang.IPersistentMap Object]
+                      [clojure.lang.IPersistentMap]}
+       :init init
+       :state state
+       :methods [^:static [create [java.util.Iterator Long clojure.lang.IFn] Object]]))
   (:require [durable.base :as base])
-  #?(:clj(:import (java.util Iterator)
-           (clojure.lang Counted)
-           (durable CountedSequence))))
+  #?(:clj
+     (:import (java.util Iterator)
+              (clojure.lang Counted)
+              (durable CountedSequence))))
 #?(:clj
    (do
      (set! *warn-on-reflection* true)
@@ -181,4 +183,4 @@
        (if (< 0 (base/xicount iter initialIndex))
          (CountedSequence. iter initialIndex styp nil)
          nil))
-   ))
+     ))

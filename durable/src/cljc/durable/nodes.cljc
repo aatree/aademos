@@ -13,9 +13,10 @@
              [cljs.reader :refer [read-string]]))
   #?(:clj
      (:refer-clojure :exclude [read-string]))
-  #?(:clj (:import (clojure.lang Counted)
-                   (java.util Iterator)
-                   (durable CountedSequence))))
+  #?(:clj
+     (:import (clojure.lang Counted)
+              (java.util Iterator)
+              (durable CountedSequence))))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -116,7 +117,7 @@
 
 (defn nth-t2 [this i opts]
   (if (base/empty-node? this)
-    #?(:clj (throw (IndexOutOfBoundsException.))
+    #?(:clj  (throw (IndexOutOfBoundsException.))
        :cljs (throw "IndexOutOfBoundsException"))
     (let [l (base/left-node this opts)
           p (base/-getCnt l opts)]
@@ -128,32 +129,6 @@
         :else
         (base/-getT2 this opts)))))
 
-(defn deln [this i opts]
-  (if (base/empty-node? this)
-    this
-    (let [l (base/left-node this opts)
-          p (base/-getCnt l opts)]
-      (if (and (= i p) (= 1 (base/-getLevel this opts)))
-        (base/right-node this opts)
-        (let [t (cond
-                  (> i p)
-                  (revise this [:right (deln (base/right-node this opts) (- i p 1) opts)] opts)
-                  (< i p)
-                  (revise this [:left (deln (base/left-node this opts) i opts)] opts)
-                  :else
-                  (let [pre (predecessor-t2 this opts)]
-                    (revise this [:t2 pre :left (deln (base/left-node this opts) (- i 1) opts)] opts)))
-              t (decrease-level t opts)
-              t (skew t opts)
-              t (revise t [:right (skew (base/right-node t opts) opts)] opts)
-              r (base/right-node t opts)
-              t (if (base/empty-node? r)
-                  t
-                  (revise t [:right (revise r [:right (skew (base/right-node r opts) opts)] opts)] opts))
-              t (split t opts)
-              t (revise t [:right (split (base/right-node t opts) opts)] opts)]
-          t)))))
-
 (deftype counted-iterator
   [node ^{:volatile-mutable true} ndx cnt opts]
 
@@ -164,13 +139,13 @@
                     (let [i ndx]
                       (set! ndx (base/xibumpIndex this i))
                       (base/xifetch this i))))
-      :clj (Iterator
-             (hasNext [this]
-               (< ndx cnt))
-             (next [this]
-               (let [i ndx]
-                 (set! ndx (base/xibumpIndex this i))
-                 (base/xifetch this i)))))
+      :clj  (Iterator
+              (hasNext [this]
+                (< ndx cnt))
+              (next [this]
+                (let [i ndx]
+                  (set! ndx (base/xibumpIndex this i))
+                  (base/xifetch this i)))))
 
   base/XIterator
   (xicount [this index]
@@ -182,12 +157,12 @@
   (xifetch [this index]
     (nth-t2 node index opts))
 
-  #?@(:cljs(ICounted
-             (-count [this]
-                     (base/xicount this ndx)))
-      :clj(Counted
-            (count [this]
-              (base/xicount this ndx)))))
+  #?@(:cljs (ICounted
+              (-count [this]
+                      (base/xicount this ndx)))
+      :clj  (Counted
+              (count [this]
+                (base/xicount this ndx)))))
 
 (defn ^counted-iterator new-counted-iterator
   ([node opts]
@@ -216,13 +191,13 @@
                     (let [i ndx]
                       (set! ndx (base/xibumpIndex this i))
                       (base/xifetch this i))))
-      :clj (Iterator
-             (hasNext [this]
-               (>= ndx 0))
-             (next [this]
-               (let [i ndx]
-                 (set! ndx (base/xibumpIndex this i))
-                 (base/xifetch this i)))))
+      :clj  (Iterator
+              (hasNext [this]
+                (>= ndx 0))
+              (next [this]
+                (let [i ndx]
+                  (set! ndx (base/xibumpIndex this i))
+                  (base/xifetch this i)))))
 
   base/XIterator
   (xicount [this index]
@@ -234,14 +209,14 @@
   (xifetch [this index]
     (let [v (nth-t2 node index opts)]
       v
-    ))
+      ))
 
-  #?@(:cljs(ICounted
-             (-count [this]
-                     (base/xicount this ndx)))
-      :clj(Counted
-            (count [this]
-              (base/xicount this ndx)))))
+  #?@(:cljs (ICounted
+              (-count [this]
+                      (base/xicount this ndx)))
+      :clj  (Counted
+              (count [this]
+                (base/xicount this ndx)))))
 
 (defn ^counted-reverse-iterator new-counted-reverse-iterator
   ([node opts]
@@ -256,36 +231,6 @@
   ([node i opts]
    (let [it (new-counted-reverse-iterator node i opts)]
      (create-counted-sequence it (base/xiindex it) identity))))
-
-(defn vector-add [n v i opts]
-  (if (base/empty-node? n)
-    (base/-newNode n v 1 nil nil 1 opts)
-    (let [l (base/left-node n opts)
-          p (base/-getCnt l opts)]
-      (split
-        (skew
-          (if (<= i p)
-            (revise n [:left (vector-add l v i opts)] opts)
-            (revise n [:right (vector-add (base/right-node n opts) v (- i p 1) opts)] opts))
-          opts)
-        opts))))
-
-(defn vector-set [n v i opts]
-  (if (base/empty-node? n)
-    (base/-newNode n v 1 nil nil 1 opts)
-    (let [l (base/left-node n opts)
-          p (base/-getCnt l opts)]
-      (split
-        (skew
-          (cond
-            (< i p)
-            (revise n [:left (vector-set l v i opts)] opts)
-            (> i p)
-            (revise n [:right (vector-set (base/right-node n opts) v (- i p 1) opts)] opts)
-            :else
-            (revise n [:t2 v] opts))
-          opts)
-        opts))))
 
 (defn get-entry [this opts] (base/-getT2 this opts))
 
@@ -425,6 +370,18 @@
   (-new-counted-iterator [this opts] (new-counted-iterator this opts))
 
   (-new-counted-seq [this opts] (new-counted-seq this opts))
+
+  (-nth-t2 [this i opts] (nth-t2 this i opts))
+
+  (-split [this opts] (split this opts))
+
+  (-skew [this opts] (skew this opts))
+
+  (-revise [this args opts] (revise this args opts))
+
+  (-predecessor-t2 [this opts] (predecessor-t2 this opts))
+
+  (-decrease-level [this opts] (decrease-level this opts))
   )
 
 (def emptyNode
@@ -490,7 +447,7 @@
         q (-qualified f inst opts)]
     (if (nil? q)
       (let [m (str "Unknown qualified durable type: " (typeName clss))]
-        #?(:clj (throw (UnsupportedOperationException. m))
+        #?(:clj  (throw (UnsupportedOperationException. m))
            :cljs (throw (str "UnsupportedOperationException " m))))
       q)))
 
@@ -597,7 +554,7 @@
   default-factory-registry
   nil
   (reify IFactory
-    (-factoryId [this] (byte \n))                            ;;;;;;;;;;;;;;;;;;;;;;;; n - nil content
+    (-factoryId [this] (byte \n))                           ;;;;;;;;;;;;;;;;;;;;;;;; n - nil content
     (-instanceType [this] nil)
     (-qualified [this t2 opts] this)
     (-valueNode [this node opts] nil)))
@@ -606,7 +563,7 @@
   default-factory-registry
   vector-context
   (reify IFactory
-    (-factoryId [this] (byte \e))                            ;;;;;;;;;;;;;;;;;;;;;; e - vector default factory
+    (-factoryId [this] (byte \e))                           ;;;;;;;;;;;;;;;;;;;;;; e - vector default factory
     (-instanceType [this] nil)
     (-qualified [this t2 opts] this)
     (-sval [this inode opts]
@@ -629,7 +586,7 @@
   default-factory-registry
   map-context
   (reify IFactory
-    (-factoryId [this] (byte \p))                            ;;;;;;;;;;;;;;;;;;;;;;;;;;; p - map default factory
+    (-factoryId [this] (byte \p))                           ;;;;;;;;;;;;;;;;;;;;;;;;;;; p - map default factory
     (-instanceType [this] nil)
     (-qualified [this t2 opts] this)
     (-sval [this inode opts]
@@ -654,7 +611,7 @@
   default-factory-registry
   set-context
   (reify IFactory
-    (-factoryId [this] (byte \q))                            ;;;;;;;;;;;;;;;;;;;;;;;;;;; q - set default factory
+    (-factoryId [this] (byte \q))                           ;;;;;;;;;;;;;;;;;;;;;;;;;;; q - set default factory
     (-instanceType [this] nil)
     (-qualified [this t2 opts] this)
     (-sval [this inode opts]

@@ -21,7 +21,13 @@
   (-getCnt [this opts])
   (-getNada [this])
   (-new-counted-iterator [this opts])
-  (-new-counted-seq [this opts]))
+  (-new-counted-seq [this opts])
+  (-nth-t2 [this i opts])
+  (-split [this opts])
+  (-skew [this opts])
+  (-revise [this args opts])
+  (-predecessor-t2 [this opts])
+  (-decrease-level [this opts]))
 
 #?(:clj (defn newMapEntry [k v] (MapEntry. k v)))
 
@@ -97,3 +103,42 @@
 (defprotocol FlexVector
   (-dropNode [this i])
   (-addNode [this i v]))
+
+(defn vector-add [n v i opts]
+  (if (empty-node? n)
+    (-newNode n v 1 nil nil 1 opts)
+    (let [l (left-node n opts)
+          p (-getCnt l opts)]
+      (-split
+        (-skew
+          (if (<= i p)
+            (-revise n [:left (vector-add l v i opts)] opts)
+            (-revise n [:right (vector-add (right-node n opts) v (- i p 1) opts)] opts))
+          opts)
+        opts))))
+
+(defn deln [this i opts]
+  (if (empty-node? this)
+    this
+    (let [l (left-node this opts)
+          p (-getCnt l opts)]
+      (if (and (= i p) (= 1 (-getLevel this opts)))
+        (right-node this opts)
+        (let [t (cond
+                  (> i p)
+                  (-revise this [:right (deln (right-node this opts) (- i p 1) opts)] opts)
+                  (< i p)
+                  (-revise this [:left (deln (left-node this opts) i opts)] opts)
+                  :else
+                  (let [pre (-predecessor-t2 this opts)]
+                    (-revise this [:t2 pre :left (deln (left-node this opts) (- i 1) opts)] opts)))
+              t (-decrease-level t opts)
+              t (-skew t opts)
+              t (-revise t [:right (-skew (right-node t opts) opts)] opts)
+              r (right-node t opts)
+              t (if (empty-node? r)
+                  t
+                  (-revise t [:right (-revise r [:right (-skew (right-node r opts) opts)] opts)] opts))
+              t (-split t opts)
+              t (-revise t [:right (-split (right-node t opts) opts)] opts)]
+          t)))))
