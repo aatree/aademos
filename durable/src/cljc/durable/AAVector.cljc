@@ -109,6 +109,20 @@
          (let [n0 (base/get-inode this)
                n1 (base/deln n0 (- (-count this) 1) (base/get-opts this))]
            (new AAVector n1 (base/get-opts this) (base/get-meta this)))))
+
+     (defn -dropNode [^AAVector this i]
+       (if (or (< i 0) (>= i (-count this)))
+         this
+         (new AAVector
+              (base/deln (base/get-inode this) i (base/get-opts this))
+              (base/get-opts this)
+              (base/get-meta this))))
+
+     #_(extend-type AAVector
+       FlexVector
+       (-dropNode [this i] (.dropNode this i))
+       (-addNode [this i v] (.addNode this i v)))
+
      )
    :cljs
    (do
