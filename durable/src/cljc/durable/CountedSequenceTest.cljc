@@ -1,13 +1,13 @@
-(ns durable.vec-it
+(ns durable.CountedSequenceTest
   #?(:cljs (:require [durable.base :as base]
-            [durable.CountedSequence :as CountedSequence]))
+             [durable.CountedSequence :as CountedSequence]))
   #?(:clj (:require [durable.base :as base]))
   #?(:clj (:import (clojure.lang Counted)
                    (java.util Iterator)
                    (durable CountedSequence))))
 
-#?(:clj
-   (set! *warn-on-reflection* true))
+  #?(:clj
+     (set! *warn-on-reflection* true))
 
 (deftype vector-iterator
   [v ^{:volatile-mutable true} ndx]
@@ -60,3 +60,16 @@
   ([v i]
    (let [it (new-vector-iterator v i)]
      (create-counted-sequence it (base/xiindex it) identity))))
+
+  (defn cstest []
+        (def s23 (new-counted-seq [1 2 3] 1))
+        (println (count s23))
+        (println s23)
+        (println (first s23))
+
+        (def s3 (next s23))
+        (println (count s3))
+        (println s3)
+        (println (first s3))
+
+        (println (next s3)))
