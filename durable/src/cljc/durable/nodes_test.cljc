@@ -7,6 +7,10 @@
    (set! *warn-on-reflection* true))
 
 (defn ntest []
+  (println)
+  (println "nodes-test")
+  (println)
+
   (def me (base/newMapEntry 1 2))
   (println (key me) (val me))
 

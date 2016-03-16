@@ -1,12 +1,13 @@
-(ns durable.CountedSequenceTest
+(ns durable.csq-test
   (:require
     [durable.base :as base]
     [durable.csq :as csq])
-  #?(:clj (:import (clojure.lang Counted)
-                   (java.util Iterator))))
-
   #?(:clj
-     (set! *warn-on-reflection* true))
+     (:import (clojure.lang Counted)
+              (java.util Iterator))))
+
+#?(:clj
+   (set! *warn-on-reflection* true))
 
 (deftype vector-iterator
   [v ^{:volatile-mutable true} ndx]
@@ -18,13 +19,13 @@
                     (let [i ndx]
                       (set! ndx (base/xibumpIndex this i))
                       (base/xifetch this i))))
-      :clj (Iterator
-             (hasNext [this]
-               (< ndx (count v)))
-             (next [this]
-               (let [i ndx]
-                 (set! ndx (base/xibumpIndex this i))
-                 (base/xifetch this i)))))
+      :clj  (Iterator
+              (hasNext [this]
+                (< ndx (count v)))
+              (next [this]
+                (let [i ndx]
+                  (set! ndx (base/xibumpIndex this i))
+                  (base/xifetch this i)))))
 
   base/XIterator
   (xicount [this index]
@@ -36,12 +37,12 @@
   (xifetch [this index]
     (v index))
 
-  #?@(:cljs(ICounted
-             (-count [this]
-                     (base/xicount this ndx)))
-      :clj(Counted
-            (count [this]
-              (base/xicount this ndx)))))
+  #?@(:cljs (ICounted
+              (-count [this]
+                      (base/xicount this ndx)))
+      :clj  (Counted
+              (count [this]
+                (base/xicount this ndx)))))
 
 (defn ^vector-iterator new-vector-iterator
   ([v]
@@ -60,15 +61,18 @@
    (let [it (new-vector-iterator v i)]
      (create-counted-sequence it (base/xiindex it) identity))))
 
-  (defn cstest []
-        (def s23 (new-counted-seq [1 2 3] 1))
-        (println (count s23))
-        (println s23)
-        (println (first s23))
+(defn cstest []
+  (println)
+  (println "csq-test")
+  (println)
+  (def s23 (new-counted-seq [1 2 3] 1))
+  (println (count s23))
+  (println s23)
+  (println (first s23))
 
-        (def s3 (next s23))
-        (println (count s3))
-        (println s3)
-        (println (first s3))
+  (def s3 (next s23))
+  (println (count s3))
+  (println s3)
+  (println (first s3))
 
-        (println (next s3)))
+  (println (next s3)))

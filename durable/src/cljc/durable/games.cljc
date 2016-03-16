@@ -1,7 +1,7 @@
 (ns durable.games
   (:require
-    [durable.CountedSequenceTest :as CountedSequenceTest]
-;    [durable.nodes-test :as nodes-test]
+    [durable.csq-test :as csq-test]
+    [durable.nodes-test :as nodes-test]
 ;    [durable.AAVectorTest :as AAVectorTest]
     ))
 
@@ -9,7 +9,7 @@
    (set! *warn-on-reflection* true))
 
 (defn bingo []
-  (CountedSequenceTest/cstest)
-;  (nodes-test/ntest)
+  (csq-test/cstest)
+  (nodes-test/ntest)
 ;  (AAVectorTest/vtest)
   )

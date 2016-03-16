@@ -1,12 +1,14 @@
 (ns durable.nodes
-  #?(:clj
-           (:require [durable.base :as base]
-                     [aautil.buffer :as buffer]
-                     [octet.core :as spec]
-                     [clojure.string :as str]
-                     [clojure.edn :refer [read-string]])
-     :cljs (:require [durable.base :as base]
-             [durable.CountedSequence :as CountedSequence]
+  #?(:clj (:require
+             [durable.base :as base]
+             [durable.csq :as csq]
+             [aautil.buffer :as buffer]
+             [octet.core :as spec]
+             [clojure.string :as str]
+             [clojure.edn :refer [read-string]])
+     :cljs (:require
+             [durable.base :as base]
+             [durable.csq :as csq]
              [aautil.buffer :as buffer]
              [octet.core :as spec]
              [clojure.string :as str]
@@ -15,8 +17,7 @@
      (:refer-clojure :exclude [read-string]))
   #?(:clj
      (:import (clojure.lang Counted)
-              (java.util Iterator)
-              (durable CountedSequence))))
+              (java.util Iterator))))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -171,7 +172,7 @@
    (->counted-iterator node i (base/-getCnt node opts) opts)))
 
 (defn create-counted-sequence [iter initialIndex styp]
-  (CountedSequence/create iter initialIndex styp))
+  (csq/create iter initialIndex styp))
 
 (defn new-counted-seq
   ([node opts]
