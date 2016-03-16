@@ -33,19 +33,11 @@
 
 #?(:cljs (defn newMapEntry [k v] [k v]))
 
-(deftype noded-state [node opts meta])
-
-(defn ^noded-state get-state [this]
-  (-getState this))
-
-(defn get-inode [noded]
-  (.-node (get-state noded)))
-
-(defn get-opts [noded]
-  (.-opts (get-state noded)))
-
-(defn get-meta [noded]
-  (.-meta (get-state noded)))
+(defprotocol INoded
+  (get-inode [this])
+  (get-opts [this])
+  (get-meta [this])
+  )
 
 (defn same? [val opts]
   (if (instance? INoded val)

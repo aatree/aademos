@@ -1,4 +1,4 @@
-(ns durable.AAVectorTest
+(ns durable.aavec-test
   (:require [durable.core :as core]))
 
 #?(:clj

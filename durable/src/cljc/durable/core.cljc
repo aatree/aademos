@@ -3,9 +3,7 @@
      (:require
        [durable.base :as base]
        [durable.nodes :as nodes]
-       [durable.AAVector :as AAVector]))
-  #?(:clj
-     (:import (durable AAVector))))
+       [durable.aavec :as aavec])))
 
 #?(:clj
    (set! *warn-on-reflection* true))
@@ -55,16 +53,16 @@
 #?(:clj
    (do
      (defn addn [vec ndx val]
-       (AAVector/addNode vec ndx val))
+       (aavec/addNode vec ndx val))
 
      (defn dropn [vec & args]
-       (reduce (fn [v i] (AAVector/dropNode v i)) vec args))
+       (reduce (fn [v i] (aavec/dropNode v i)) vec args))
 
      #_(defn new-basic-sorted-map [opts]
        (new AAMap nodes/emptyNode opts))
 
      (defn new-basic-vector [opts]
-       (new AAVector nodes/emptyNode opts))
+       (aavec/create nodes/emptyNode opts))
 
      #_(defn new-basic-sorted-set [opts]
        (new AASet (new AAMap nodes/emptyNode opts)))

@@ -2,7 +2,7 @@
   (:require
     [durable.csq-test :as csq-test]
     [durable.nodes-test :as nodes-test]
-;    [durable.AAVectorTest :as AAVectorTest]
+    [durable.aavec-test :as aavec-test]
     ))
 
 #?(:clj
@@ -11,5 +11,5 @@
 (defn bingo []
   (csq-test/cstest)
   (nodes-test/ntest)
-;  (AAVectorTest/vtest)
+  (aavec-test/vtest)
   )
