@@ -100,10 +100,6 @@
     (empty-node this opts)
     (-getRight this opts)))
 
-(defprotocol FlexVector
-  (-dropNode [this i])
-  (-addNode [this i v]))
-
 (defn vector-add [n v i opts]
   (if (empty-node? n)
     (-newNode n v 1 nil nil 1 opts)

@@ -18,22 +18,22 @@
   '[pandeiro.boot-http       :refer [serve]])
 
 (task-options!
-  aot {:namespace '#{durable.CountedSequence durable.AAVector}})
+  aot {:namespace '#{durable.base durable.CountedSequence durable.AAVector}})
 
 (deftask test-it
    "Setup, compile and run the tests."
    []
    (comp
-    (aot)
-;     (show :fileset true)
-     (run-tests :namespaces '#{durable.fun-test})
+  ;  (aot)
+  ;  (show :fileset true)
+    (run-tests :namespaces '#{durable.fun-test})
      ))
 
 (deftask dev
   "Build for local development."
   []
   (comp
-    (aot)
+ ;   (aot)
     (serve :port 8000
            :init 'durable.strap/jetty-init)
     (watch)

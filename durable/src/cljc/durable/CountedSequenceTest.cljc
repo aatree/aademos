@@ -1,10 +1,9 @@
 (ns durable.CountedSequenceTest
-  #?(:cljs (:require [durable.base :as base]
-             [durable.CountedSequence :as CountedSequence]))
-  #?(:clj (:require [durable.base :as base]))
+  (:require
+    [durable.base :as base]
+    [durable.csq :as csq])
   #?(:clj (:import (clojure.lang Counted)
-                   (java.util Iterator)
-                   (durable CountedSequence))))
+                   (java.util Iterator))))
 
   #?(:clj
      (set! *warn-on-reflection* true))
@@ -51,7 +50,7 @@
    (->vector-iterator v i)))
 
 (defn create-counted-sequence [iter initialIndex styp]
-  (CountedSequence/create iter initialIndex styp))
+  (csq/create iter initialIndex styp))
 
 (defn new-counted-seq
   ([v]

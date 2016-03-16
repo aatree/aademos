@@ -3,7 +3,7 @@
      (:gen-class
        :main false
        :extends clojure.lang.APersistentVector
-       :implements [clojure.lang.IObj]
+       :implements [clojure.lang.IObj durable.base.INoded]
        :constructors {[java.lang.Object clojure.lang.IPersistentMap]
                       []
                       [java.lang.Object clojure.lang.IPersistentMap clojure.lang.IPersistentMap]
@@ -49,7 +49,7 @@
              n1 (base/vector-add n0 (base/transcriber val (base/get-opts this)) (-count this) (base/get-opts this))]
          (new AAVector n1 (base/get-opts this) (base/get-meta this))))
 
-     (defn -addNode [^AAVector this i val]
+     (defn addNode [^AAVector this i val]
        (let [c (-count this)]
          (cond
            (= i c)
@@ -110,20 +110,16 @@
                n1 (base/deln n0 (- (-count this) 1) (base/get-opts this))]
            (new AAVector n1 (base/get-opts this) (base/get-meta this)))))
 
-     (defn -dropNode [^AAVector this i]
+     (defn dropNode [^AAVector this i]
        (if (or (< i 0) (>= i (-count this)))
          this
          (new AAVector
               (base/deln (base/get-inode this) i (base/get-opts this))
               (base/get-opts this)
-              (base/get-meta this))))
-
-     #_(extend-type AAVector
-       FlexVector
-       (-dropNode [this i] (.dropNode this i))
-       (-addNode [this i v] (.addNode this i v)))
-
-     )
+              (base/get-meta this)))))
    :cljs
    (do
+     (defprotocol FlexVector
+       (-dropNode [this i])
+       (-addNode [this i v]))
      ))

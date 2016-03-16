@@ -1,61 +1,46 @@
-(ns durable.CountedSequence
+(ns durable.csq
+  (:require
+    [durable.base :as base])
   #?(:clj
-     (:gen-class
-       :main false
-       :extends clojure.lang.ASeq
-       :implements [clojure.lang.Counted]
-       :constructors {[java.util.Iterator Long clojure.lang.IFn]
-                      []
-                      [clojure.lang.IPersistentMap Object]
-                      [clojure.lang.IPersistentMap]}
-       :init init
-       :state state
-       :methods [^:static [create [java.util.Iterator Long clojure.lang.IFn] Object]]))
-  (:require [durable.base :as base])
-  #?(:clj
-     (:import (java.util Iterator)
-              (clojure.lang Counted)
-              (durable CountedSequence))))
+     (:import
+       (java.util Iterator)
+       (clojure.lang Counted))))
 #?(:clj
    (do
      (set! *warn-on-reflection* true)
 
-     (defn -create [iter initialIndex styp]
-       (if (< 0 (base/xicount iter initialIndex))
-         (new durable.CountedSequence iter initialIndex styp)
-         nil))
-
      (defrecord seq-state [iter ndx styp rst])
 
-     (defn iter [seq-state] (:iter seq-state))
+     (declare create)
 
-     (defn -init
-       ([^Iterator iter initialIndex styp]
-        (let [^Counted citer iter
-              s (->seq-state iter initialIndex styp (atom nil))]
-          (reset! (:rst s) s)
-          [[] s]))
-       ([meta s]
-        [[meta] s]))
+     (defn new-csq [meta state]
+       (proxy [clojure.lang.ASeq clojure.lang.Counted] [meta]
+         (withMeta [meta] (new-csq meta state ))
 
-     (defn -withMeta [^CountedSequence this meta] (new durable.CountedSequence meta (.-state this)))
+         (first []
+           ((:styp state) (base/xifetch (:iter state) (:ndx state))))
 
-     (defn -first [^CountedSequence this]
-       (let [s (.-state this)]
-         ((:styp s) (base/xifetch (iter s) (:ndx s)))))
+         (next []
+           (let [it (:iter state)
+                 r (:rst state)]
+             (when (= state @r)
+               (first this)
+               (swap! r #(if (= state %) (create it (base/xibumpIndex it (:ndx state)) (:styp state)))))
+             @(:rst state)))
 
-     (defn -next [^CountedSequence this]
-       (let [s (.-state this)
-             it (iter s)
-             r (:rst s)]
-         (when (= s @r)
-           (-first this)
-           (swap! r #(if (= s %) (-create it (base/xibumpIndex it (:ndx s)) (:styp s)))))
-         @(:rst s)))
+         (count []
+           (base/xicount (:iter state) (:ndx state)))
+         ))
 
-     (defn -count [^CountedSequence this]
-       (let [s (.-state this)]
-         (base/xicount (iter s) (:ndx s))))
+     (defn new-counted-sequence [iter ndx styp]
+       (let [state (->seq-state iter ndx styp (atom nil))]
+         (reset! (:rst state) state)
+         (new-csq nil state)))
+
+     (defn create [iter initialIndex styp]
+       (if (< 0 (base/xicount iter initialIndex))
+         (new-counted-sequence iter initialIndex styp)
+         nil))
      )
    :cljs
    (do
@@ -93,7 +78,7 @@
                   (recur (dec idx)))
                 -1))))))
 
-     (deftype CountedSequence [iter i styp meta]
+     (deftype counted-sequence [iter i styp meta]
        Object
        (toString [coll]
          (pr-str* coll))
@@ -109,7 +94,7 @@
          (-lastIndexOf coll x start))
 
        ICloneable
-       (-clone [_] (CountedSequence. iter i styp meta))
+       (-clone [_] (counted-sequence. iter i styp meta))
 
        ISeqable
        (-seq [this]
@@ -120,20 +105,20 @@
        (-meta [coll] meta)
        IWithMeta
        (-with-meta [coll new-meta]
-         (CountedSequence. iter i styp new-meta))
+         (counted-sequence. iter i styp new-meta))
 
        ASeq
        ISeq
        (-first [_] (styp (base/xifetch iter i)))
        (-rest [_]
          (if (< 1 (base/xicount iter i))
-           (CountedSequence. iter (base/xibumpIndex iter i) styp nil)
+           (counted-sequence. iter (base/xibumpIndex iter i) styp nil)
            (list)))
 
        INext
        (-next [_]
          (if (< 1 (base/xicount iter i))
-           (CountedSequence. iter (base/xibumpIndex iter i) styp nil)
+           (counted-sequence. iter (base/xibumpIndex iter i) styp nil)
            nil))
 
        ICounted
@@ -178,10 +163,10 @@
        (-pr-writer [coll writer opts] (pr-sequential-writer writer pr-writer "(" " " ")" opts coll))
        )
 
-     (es6-iterable CountedSequence)
+     (es6-iterable counted-sequence)
 
      (defn create [iter initialIndex styp]
        (if (< 0 (base/xicount iter initialIndex))
-         (CountedSequence. iter initialIndex styp nil)
+         (counted-sequence. iter initialIndex styp nil)
          nil))
      ))
