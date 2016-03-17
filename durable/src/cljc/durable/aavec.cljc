@@ -95,7 +95,7 @@
                (= i c)
                (cons this (base/transcriber val -opts))
                (and (>= i 0) (< i c))
-               (let [n0 (base/get-inode this)
+               (let [n0 -root
                      n1 (base/vector-add n0 (base/transcriber val -opts) i -opts)]
                  (new-aavec n1 -opts -meta))
                :else
