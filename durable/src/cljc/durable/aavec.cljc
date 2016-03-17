@@ -2,10 +2,14 @@
   (:require
     [durable.base :as base]))
 
+#?(:clj (set! *warn-on-reflection* true))
+
+(defprotocol FlexVector
+  (dropNode [this i])
+  (addNode [this i v]))
+
 #?(:clj
    (do
-     (set! *warn-on-reflection* true)
-
      (defn vector-set [n v i opts]
        (if (base/empty-node? n)
          (base/-newNode n v 1 nil nil 1 opts)
@@ -24,7 +28,7 @@
              opts))))
 
      (defn new-aavec [-root -opts -meta]
-       (proxy [clojure.lang.APersistentVector clojure.lang.IObj durable.base.INoded] []
+       (proxy [clojure.lang.APersistentVector clojure.lang.IObj durable.base.INoded durable.aavec.FlexVector] []
 
          (get-inode [] -root)
 
@@ -38,6 +42,14 @@
 
          (count []
            (base/-getCnt -root -opts))
+
+         (nth
+           ([i]
+            (base/-nth-t2 -root i -opts))
+           ([i notFound]
+            (if (and (>= i 0) (< i (count this)))
+              (nth this i)
+              notFound)))
 
          (cons [val]
            (let [n0 -root
@@ -71,34 +83,28 @@
              (let [n0 -root
                    n1 (base/deln n0 (- (count this) 1) -opts)]
                (new-aavec n1 -opts -meta))))
+
+         (dropNode [i]
+           (if (or (< i 0) (>= i (count this)))
+             this
+             (new-aavec (base/deln -root i -opts) -opts -meta)))
+
+         (addNode [i val]
+           (let [c (count this)]
+             (cond
+               (= i c)
+               (cons this (base/transcriber val -opts))
+               (and (>= i 0) (< i c))
+               (let [n0 (base/get-inode this)
+                     n1 (base/vector-add n0 (base/transcriber val -opts) i -opts)]
+                 (new-aavec n1 -opts -meta))
+               :else
+               (throw (IndexOutOfBoundsException.)))))
          ))
 
      (defn create [root opts]
        (new-aavec root opts nil))
-
-     (defn dropNode [this i]
-               (if (or (< i 0) (>= i (count this)))
-                 this
-                 (new-aavec (base/deln (base/get-inode this) i (base/get-opts this))
-                            (base/get-opts this)
-                            (base/get-meta this))))
-
-     (defn addNode [this i val]
-              (let [c (count this)]
-                (cond
-                  (= i c)
-                  (cons this (base/transcriber val (base/get-opts this)))
-                  (and (>= i 0) (< i c))
-                  (let [n0 (base/get-inode this)
-                        n1 (base/vector-add n0 (base/transcriber val (base/get-opts this)) i (base/get-opts this))]
-                    (new-aavec n1 (base/get-opts this) (base/get-meta this)))
-                  :else
-                  (throw (IndexOutOfBoundsException.)))))
-
      )
    :cljs
    (do
-     (defprotocol FlexVector
-       (-dropNode [this i])
-       (-addNode [this i v]))
      ))

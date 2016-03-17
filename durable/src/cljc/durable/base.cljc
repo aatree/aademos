@@ -36,7 +36,6 @@
 (defprotocol INoded
   (get-inode [this])
   (get-opts [this])
-  (get-meta [this])
   )
 
 (defn same? [val opts]
