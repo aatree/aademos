@@ -21,7 +21,8 @@
 (defn required [map key]
   (if (key map)
     map
-    (throw (Exception. (str "missing entry: " key)))))
+    #?(:clj (throw (Exception. (str "missing entry: " key)))
+       :cljs (throw (str "missing entry: " key)))))
 
 (defn assoc-default [map key val]
   (if (key map)

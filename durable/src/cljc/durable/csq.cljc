@@ -44,40 +44,6 @@
      )
    :cljs
    (do
-     (defn- -indexOf
-       ([coll x]
-        (-indexOf coll x 0))
-       ([coll x start]
-        (let [len (count coll)]
-          (if (>= start len)
-            -1
-            (loop [idx (cond
-                         (pos? start) start
-                         (neg? start) (max 0 (+ start len))
-                         :else start)]
-              (if (< idx len)
-                (if (= (nth coll idx) x)
-                  idx
-                  (recur (inc idx)))
-                -1))))))
-
-     (defn- -lastIndexOf
-       ([coll x]
-        (-lastIndexOf coll x (count coll)))
-       ([coll x start]
-        (let [len (count coll)]
-          (if (zero? len)
-            -1
-            (loop [idx (cond
-                         (pos? start) (min (dec len) start)
-                         (neg? start) (+ len start)
-                         :else start)]
-              (if (>= idx 0)
-                (if (= (nth coll idx) x)
-                  idx
-                  (recur (dec idx)))
-                -1))))))
-
      (deftype counted-sequence [iter i styp meta]
        Object
        (toString [coll]
@@ -85,13 +51,13 @@
        (equiv [this other]
          (-equiv this other))
        (indexOf [coll x]
-         (-indexOf coll x 0))
+         (base/-indexOf coll x 0))
        (indexOf [coll x start]
-         (-indexOf coll x start))
+         (base/-indexOf coll x start))
        (lastIndexOf [coll x]
-         (-lastIndexOf coll x (count coll)))
+         (base/-lastIndexOf coll x (count coll)))
        (lastIndexOf [coll x start]
-         (-lastIndexOf coll x start))
+         (base/-lastIndexOf coll x start))
 
        ICloneable
        (-clone [_] (counted-sequence. iter i styp meta))

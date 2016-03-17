@@ -9,9 +9,6 @@
   (xicount [this index])
   (xifetch [this index]))
 
-(defprotocol INoded
-  (-getState [this]))
-
 (defprotocol INode
   (-newNode [this t2 level left right cnt opts])
   (-getT2 [this opts])
@@ -129,3 +126,37 @@
               t (-split t opts)
               t (-revise t [:right (-split (right-node t opts) opts)] opts)]
           t)))))
+
+#?(:cljs (defn -indexOf
+  ([coll x]
+   (-indexOf coll x 0))
+  ([coll x start]
+   (let [len (count coll)]
+     (if (>= start len)
+       -1
+       (loop [idx (cond
+                    (pos? start) start
+                    (neg? start) (max 0 (+ start len))
+                    :else start)]
+         (if (< idx len)
+           (if (= (nth coll idx) x)
+             idx
+             (recur (inc idx)))
+           -1)))))))
+
+#?(:cljs (defn -lastIndexOf
+  ([coll x]
+   (-lastIndexOf coll x (count coll)))
+  ([coll x start]
+   (let [len (count coll)]
+     (if (zero? len)
+       -1
+       (loop [idx (cond
+                    (pos? start) (min (dec len) start)
+                    (neg? start) (+ len start)
+                    :else start)]
+         (if (>= idx 0)
+           (if (= (nth coll idx) x)
+             idx
+             (recur (dec idx)))
+           -1)))))))
