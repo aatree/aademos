@@ -10,9 +10,6 @@ Exercises [closer](https://github.com/aatree/aautil#closer).
 1. [lens demo](https://github.com/aatree/aademos/tree/master/lens) -
 Integrates [dewdrop](https://github.com/aatree/aautil#dewdrop) with 
 [hoplon](https://github.com/hoplon/hoplon).
-1. [servant-demo](https://github.com/aatree/aademos/tree/master/servant-demo) -
-A simple demo of the [Servant Library](https://github.com/MarcoPolo/Servant)
-adopted from MarcoPolo's own demo to use boot.
 1. [w3c-worker demo](https://github.com/aatree/aademos/tree/master/w3c-worker) -
 An adoption of the 
 [w3c schools webworker example](http://www.w3schools.com/html/html5_webworkers.asp).
