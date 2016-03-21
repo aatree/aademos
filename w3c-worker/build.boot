@@ -3,7 +3,6 @@
                   [adzerk/boot-reload                        "0.4.5"]
                   [com.cemerick/piggieback                   "0.2.2-20150424.212437-1"]
                   [weasel                                    "0.7.0"]
-                  [org.clojure/tools.nrepl                   "0.2.12"]
                   [hoplon/boot-hoplon                        "0.1.13"]
                   [hoplon/hoplon                             "6.0.0-alpha13"]
                   [org.clojure/clojure                       "1.8.0"]
@@ -27,4 +26,4 @@
 ;    (reload) ;does not work
 ;    (cljs :optimizations :none) ;does not work
     (cljs :optimizations :simple)
-    (serve :port 9000)))
+    (serve :port 9000 :init-params {"org.eclipse.jetty.servlet.Default.useFileMappedBuffer" "false"})))
