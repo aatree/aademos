@@ -1,7 +1,6 @@
 (set-env!
   :dependencies '[[adzerk/boot-cljs                          "1.7.228-1"]
-                  [adzerk/boot-reload                        "0.4.5"]
-                  [com.cemerick/piggieback                   "0.2.1"]
+                  [com.cemerick/piggieback                   "0.2.2-20150424.212437-1"]
                   [weasel                                    "0.7.0"]
                   [hoplon/boot-hoplon                        "0.1.13"]
                   [hoplon/hoplon                             "6.0.0-alpha13"]
@@ -13,7 +12,6 @@
 
 (require
   '[adzerk.boot-cljs         :refer [cljs]]
-  '[adzerk.boot-reload       :refer [reload]]
   '[hoplon.boot-hoplon       :refer [hoplon prerender]]
   '[tailrecursion.boot-jetty :refer [serve]])
 
@@ -24,7 +22,6 @@
     (watch)
     (speak)
     (hoplon)
-;    (reload)
     (cljs :optimizations :simple)
 ;    (show :fileset true)
     (serve :port 8000 :init-params {"org.eclipse.jetty.servlet.Default.useFileMappedBuffer" "false"})))
