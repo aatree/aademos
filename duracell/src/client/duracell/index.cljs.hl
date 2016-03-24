@@ -11,7 +11,7 @@
 (html
   (head
     (title "duracell demo"))
-  (body :css {:display "none"} :toggle ready
+  (body
         (div
           :id "error"
           :click clear-error!
@@ -19,8 +19,9 @@
           :css {:display "none"}
           (text "~{error}"))
         (h2 (text "IndexedDB Demo: Duracell"))
-        (p (input
-             :type "text"
-             :value txt
-             :keyup #(reset! txt @%)))
-        (p (text "Type something and then refresh the page--nothing is lost."))))
+        (div :css {:display "none"} :toggle ready
+          (p (input
+               :type "text"
+               :value txt
+               :keyup #(reset! txt @%)))
+          (p (text "Type something and then refresh the page--nothing is lost.")))))
