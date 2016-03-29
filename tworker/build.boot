@@ -5,9 +5,9 @@
                   [hoplon/boot-hoplon                        "0.1.13"]
                   [hoplon/hoplon                             "6.0.0-alpha13"]
                   [org.clojure/clojure                       "1.8.0"]
-                  [org.clojure/clojurescript                 "1.8.34"]
+                  [org.clojure/clojurescript                 "1.8.40"]
                   [tailrecursion/boot-jetty                  "0.1.3"]
-                  [aatree/aaworker                           "0.1.3"]]
+                  [aatree/aaworker                           "0.1.4"]]
   :source-paths   #{"src/client" "src/worker"})
 
 (require
