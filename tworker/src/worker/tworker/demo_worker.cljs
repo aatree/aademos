@@ -19,4 +19,5 @@
               @clicks))))
 
 (defn main []
-  (api/process-requests))
+  (api/process-requests))(defn main []
+                           (api/process-requests))

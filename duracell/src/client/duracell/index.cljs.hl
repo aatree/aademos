@@ -24,4 +24,4 @@
                :type "text"
                :value txt
                :keyup #(reset! txt @%)))
-          (p (text "Type something and then refresh the page--nothing is lost.")))))
+          (p (text "Type something else and then refresh the page--nothing is lost.")))))
