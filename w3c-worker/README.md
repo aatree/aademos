@@ -22,6 +22,7 @@ This project is an adoption of the [w3c schools webworker example][1].
 ##Videos
 
 - [boot.properties file](http://aatree.github.io/videos/boot.properties.html)
+- [project.clj file generation](http://aatree.github.io/videos/project.clj.html)
 - [Demo](http://aatree.github.io/videos/w3c-worker.html)
 
 ## Usage

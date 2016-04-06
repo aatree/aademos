@@ -22,6 +22,7 @@ running in a
 ##Videos
 
 - [boot.properties file](http://aatree.github.io/videos/boot.properties.html)
+- [project.clj file generation](http://aatree.github.io/videos/project.clj.html)
 - [Demo](http://aatree.github.io/videos/duracell.html)
 
 The duracell demo builds on hoplon,
