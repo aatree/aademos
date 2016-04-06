@@ -2,7 +2,10 @@
 
 This project is an adoption of the [w3c schools webworker example][1].
 
-[Demo Video](http://aatree.github.io/videos/w3c-worker.html)
+##Videos
+
+- [boot.properties file](http://aatree.github.io/videos/boot.properties.html)
+- [Demo](http://aatree.github.io/videos/w3c-worker.html)
 
 ## Usage
 
