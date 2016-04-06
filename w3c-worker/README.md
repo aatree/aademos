@@ -2,6 +2,8 @@
 
 This project is an adoption of the [w3c schools webworker example][1].
 
+[Demo Video](http://aatree.github.io/videos/w3c-worker.html)
+
 ## Usage
 
 1. Start the auto-compiler with audio feedback. In a terminal:
