@@ -4,7 +4,7 @@ This project is an adoption of the [w3c schools webworker example][1].
 
 ```
 │   .gitignore
-│   [boot.properties](http://aatree.github.io/videos/boot.properties.html)
+│   boot.properties
 │   build.boot
 │   project.clj
 │   README.md
