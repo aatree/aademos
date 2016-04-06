@@ -4,23 +4,19 @@ This project is an adoption of the [w3c schools webworker example][1].
 
 ```
 │   .gitignore
-│   boot-project.iml
-│   boot.properties
+│   [boot.properties](http://aatree.github.io/videos/boot.properties.html)
 │   build.boot
 │   project.clj
 │   README.md
 │
-├───src
-│   │   worker.cljs.edn
-│   │
-│   ├───count
-│   │       index.cljs.hl
-│   │
-│   └───counter_worker
-│           counts.cljs
-│
-└───target
-    └───classes
+└───src
+    │   worker.cljs.edn
+    │
+    ├───count
+    │       index.cljs.hl
+    │
+    └───counter_worker
+            counts.cljs
 ```
 
 ##Videos
