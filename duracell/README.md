@@ -5,6 +5,20 @@ This is a demo showing how easy it is to use
 running in a
 [web worker](http://www.w3schools.com/html/html5_webworkers.asp).
 
+```
+│   .gitignore
+│   boot.properties
+│   build.boot
+│   project.clj
+│   README.md
+│
+└───src
+    └───client
+        └───duracell
+                index.cljs.hl
+                strap.clj
+```
+
 ##Videos
 
 - [boot.properties file](http://aatree.github.io/videos/boot.properties.html)
