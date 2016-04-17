@@ -1,0 +1,51 @@
+(page "index.html")
+
+;(set! cljs.core/*print-fn* #(.log js/console %))
+
+(def innerWidth (cell window.innerWidth))
+(def innerHeight (cell window.innerHeight))
+
+(defn resize []
+      (reset! innerWidth window.innerWidth)
+      (reset! innerHeight window.innerHeight)
+      )
+
+(set! (.-onresize js/window) resize)
+
+(defn fullscreen []
+      (let [e (.getElementById js/document "me")]
+           (if (.-requestFullscreen e)
+             (.requestFullscreen e))
+           (if (.-msRequestFullscreen e)
+             (.msRequestFullScreen e))
+           (if (.-mozRequestFullScreen e)
+             (.mozRequestFullScreen e))
+           (if (.-webkitRequestFullscreen e)
+             (.webkitRequestFullscreen e))
+           ))
+
+(html
+  (head
+    (link :href "app.css" :rel "stylesheet"))
+  (body
+    (div :id "me" :css(cell= {:width (- innerWidth 40)
+                              :background-color "lightgrey"})
+         (h1 "Hello, Hoplon! How are you these days?")
+         (hr :css(cell= {:width 100}))
+         (hr :css(cell= {:width (- innerWidth 40)}))
+         (p innerWidth)
+         (p innerHeight)
+         (p "this is some text, which isn't much. It is just text. So do not bother to read this. It is only text.")
+         (table
+           (col :width 50)
+           (col :width (cell= (- innerWidth 90)))
+           (tr
+             (td "hi")
+             (td
+               :css {:border "2px solid #73AD21"}
+               "Fred. How goes it? Are you feeling good?"))
+           )
+         )
+    (br)
+    (button :click fullscreen "full screen")
+    ))
