@@ -48,4 +48,14 @@
          )
     (br)
     (button :click fullscreen "full screen")
+    (br)(br)
+    (button :click #(.write js/document "Hello world!") "overwrite document")
+    (br)(br)
+    (button :click
+            #(.css (js/jQuery "p") "backgroundColor" "yellow")
+            "yellowp")
+    " "
+    (button :click
+            #(.css (js/jQuery "p") "backgroundColor" "")
+            "unyellow p")
     ))
