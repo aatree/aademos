@@ -1,13 +1,15 @@
 (page "index.html")
 
-;(set! cljs.core/*print-fn* #(.log js/console %))
+(set! cljs.core/*print-fn* #(.log js/console %))
 
-(def innerWidth (cell window.innerWidth))
-(def innerHeight (cell window.innerHeight))
+(def windowInnerWidth (cell window.innerWidth))
+(def innerWidth (cell= (max 500 windowInnerWidth)))
+(def windowInnerHeight (cell window.innerHeight))
+(def innerHeight (cell= (max 500 windowInnerHeight)))
 
 (defn resize []
-      (reset! innerWidth window.innerWidth)
-      (reset! innerHeight window.innerHeight)
+      (reset! windowInnerWidth window.innerWidth)
+      (reset! windowInnerHeight window.innerHeight)
       )
 
 (set! (.-onresize js/window) resize)
@@ -24,6 +26,8 @@
              (.webkitRequestFullscreen e))
            ))
 
+(def yellowed (cell false))
+
 (html
   (head
     (link :href "app.css" :rel "stylesheet"))
@@ -33,9 +37,10 @@
          (h1 "Hello, Hoplon! How are you these days?")
          (hr :css(cell= {:width 100}))
          (hr :css(cell= {:width (- innerWidth 40)}))
-         (p innerWidth)
-         (p innerHeight)
-         (p "this is some text, which isn't much. It is just text. So do not bother to read this. It is only text.")
+         (p "windowInnerWidth: " windowInnerWidth ", windowInnerHeight: " windowInnerHeight)
+         (p "innerWidth: " innerWidth ", innerHeight: " innerHeight)
+         (p "(Minimum inner width and height are 500.)")
+         (p "This is some text, which isn't much. It is just text. So do not bother to read this. It is only text.")
          (table
            (col :width 50)
            (col :width (cell= (- innerWidth 90)))
@@ -52,10 +57,16 @@
     (button :click #(.write js/document "Hello world!") "overwrite document")
     (br)(br)
     (button :click
-            #(.css (js/jQuery "p") "backgroundColor" "yellow")
-            "yellowp")
+            #(do
+              (reset! yellowed true)
+              (.css (js/jQuery "p") "backgroundColor" "yellow"))
+            :disabled yellowed
+            "yellow p")
     " "
     (button :click
-            #(.css (js/jQuery "p") "backgroundColor" "")
+            #(do
+              (reset! yellowed false)
+              (.css (js/jQuery "p") "backgroundColor" ""))
+            :disabled (cell= (not yellowed))
             "unyellow p")
     ))
