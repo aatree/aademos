@@ -4,9 +4,9 @@
 (println (aget (aget js.window "screen") "height"))
 
 (def windowInnerWidth (cell window.innerWidth))
-(def innerWidth (cell= (max 500 (- windowInnerWidth 60))))
+(def innerWidth (cell= (max 500 (- windowInnerWidth 40))))
 (def windowInnerHeight (cell window.innerHeight))
-(def innerHeight (cell= (max 500 (- windowInnerHeight 60))))
+(def innerHeight (cell= (max 500 (- windowInnerHeight 40))))
 
 (def isFullScreen (cell= (= windowInnerHeight (aget (aget js.window "screen") "height"))))
 
