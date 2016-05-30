@@ -32,11 +32,11 @@
   (head
     (link :href "app.css" :rel "stylesheet"))
   (body
-    (div :id "me" :css(cell= {:width (- innerWidth 40)
-                              :background-color "lightgrey"})
+    (div :id "me" :css (cell= {:width            (- innerWidth 40)
+                               :background-color "lightgrey"})
          (h1 "Hello, Hoplon! How are you these days?")
-         (hr :css(cell= {:width 100}))
-         (hr :css(cell= {:width (- innerWidth 40)}))
+         (hr :css (cell= {:width 100}))
+         (hr :css (cell= {:width (- innerWidth 40)}))
          (p "windowInnerWidth: " windowInnerWidth ", windowInnerHeight: " windowInnerHeight)
          (p "innerWidth: " innerWidth ", innerHeight: " innerHeight)
          (p "(Minimum inner width and height are 500.)")
@@ -53,20 +53,25 @@
          )
     (br)
     (button :click fullscreen "full screen")
-    (br)(br)
+    (br) (br)
     (button :click #(.write js/document "Hello world!") "overwrite document")
-    (br)(br)
-    (button :click
-            #(do
-              (reset! yellowed true)
-              (.css (js/jQuery "p") "backgroundColor" "yellow"))
-            :disabled yellowed
-            "yellow p")
-    " "
-    (button :click
-            #(do
-              (reset! yellowed false)
-              (.css (js/jQuery "p") "backgroundColor" ""))
-            :disabled (cell= (not yellowed))
-            "unyellow p")
-    ))
+    (br) (br)
+    (table (tr
+             (td
+               (button :click
+                       #(do
+                         (reset! yellowed true)
+                         (.css (js/jQuery "p") "backgroundColor" "yellow"))
+                       :disabled yellowed
+                       "yellow p"))
+             (td
+               (div
+                 :slide-toggle yellowed
+                 :css {:display "none"}
+                 (button :click
+                         #(do
+                           (reset! yellowed false)
+                           (.css (js/jQuery "p") "backgroundColor" ""))
+                         :disabled (cell= (not yellowed))
+                         "unyellow p")))
+             ))))
