@@ -1,11 +1,14 @@
 (page "index.html")
 
 (set! cljs.core/*print-fn* #(.log js/console %))
+(println (aget (aget js.window "screen") "height"))
 
 (def windowInnerWidth (cell window.innerWidth))
-(def innerWidth (cell= (max 500 windowInnerWidth)))
+(def innerWidth (cell= (max 500 (- windowInnerWidth 60))))
 (def windowInnerHeight (cell window.innerHeight))
-(def innerHeight (cell= (max 500 windowInnerHeight)))
+(def innerHeight (cell= (max 500 (- windowInnerHeight 60))))
+
+(def isFullScreen (cell= (= windowInnerHeight (aget (aget js.window "screen") "height"))))
 
 (defn resize []
       (reset! windowInnerWidth window.innerWidth)
@@ -32,27 +35,28 @@
   (head
     (link :href "app.css" :rel "stylesheet"))
   (body
-    (div :id "me" :css (cell= {:width            (- innerWidth 40)
+    (div :id "me" :css (cell= {:width innerWidth
                                :background-color "lightgrey"})
          (h1 "Hello, Hoplon! How are you these days?")
          (hr :css (cell= {:width 100}))
-         (hr :css (cell= {:width (- innerWidth 40)}))
+         (hr :css (cell= {:width innerWidth}))
          (p "windowInnerWidth: " windowInnerWidth ", windowInnerHeight: " windowInnerHeight)
          (p "innerWidth: " innerWidth ", innerHeight: " innerHeight)
          (p "(Minimum inner width and height are 500.)")
          (p "This is some text, which isn't much. It is just text. So do not bother to read this. It is only text.")
          (table
            (col :width 50)
-           (col :width (cell= (- innerWidth 90)))
+           (col :width (cell= (- innerWidth 50)))
            (tr
              (td "hi")
              (td
                :css {:border "2px solid #73AD21"}
                "Fred. How goes it? Are you feeling good?"))
            )
-         )
     (br)
-    (button :click fullscreen "full screen")
+    (button :click fullscreen
+            :disabled isFullScreen
+            "full screen")
     (br) (br)
     (button :click #(.write js/document "Hello world!") "overwrite document")
     (br) (br)
@@ -74,4 +78,6 @@
                            (.css (js/jQuery "p") "backgroundColor" ""))
                          :disabled (cell= (not yellowed))
                          "unyellow p")))
-             ))))
+             ))
+    (img :src "1.jpg" :width (cell= innerWidth))
+    )))
