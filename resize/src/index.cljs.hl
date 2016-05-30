@@ -31,11 +31,14 @@
 
 (def yellowed (cell false))
 
+(def images ["1.jpg" "2.jpg" "3.jpg" "4.jpg" "5.jpg"])
+(def image-index (cell 0))
+
 (html
   (head
     (link :href "app.css" :rel "stylesheet"))
   (body
-    (div :id "me" :css (cell= {:width innerWidth
+    (div :id "me" :css (cell= {:width            innerWidth
                                :background-color "lightgrey"})
          (h1 "Hello, Hoplon! How are you these days?")
          (hr :css (cell= {:width 100}))
@@ -53,31 +56,32 @@
                :css {:border "2px solid #73AD21"}
                "Fred. How goes it? Are you feeling good?"))
            )
-    (br)
-    (button :click fullscreen
-            :disabled isFullScreen
-            "full screen")
-    (br) (br)
-    (button :click #(.write js/document "Hello world!") "overwrite document")
-    (br) (br)
-    (table (tr
-             (td
-               (button :click
-                       #(do
-                         (reset! yellowed true)
-                         (.css (js/jQuery "p") "backgroundColor" "yellow"))
-                       :disabled yellowed
-                       "yellow p"))
-             (td
-               (div
-                 :slide-toggle yellowed
-                 :css {:display "none"}
-                 (button :click
-                         #(do
-                           (reset! yellowed false)
-                           (.css (js/jQuery "p") "backgroundColor" ""))
-                         :disabled (cell= (not yellowed))
-                         "unyellow p")))
-             ))
-    (img :src "1.jpg" :width (cell= innerWidth))
-    )))
+         (br)
+         (button :click fullscreen
+                 :disabled isFullScreen
+                 "full screen")
+         (br) (br)
+         (button :click #(.write js/document "Hello world!") "overwrite document")
+         (br) (br)
+         (table (tr
+                  (td
+                    (button :click
+                            #(do
+                              (reset! yellowed true)
+                              (.css (js/jQuery "p") "backgroundColor" "yellow"))
+                            :disabled yellowed
+                            "yellow p"))
+                  (td
+                    (div
+                      :slide-toggle yellowed
+                      :css {:display "none"}
+                      (button :click
+                              #(do
+                                (reset! yellowed false)
+                                (.css (js/jQuery "p") "backgroundColor" ""))
+                              :disabled (cell= (not yellowed))
+                              "unyellow p")))
+                  ))
+         (img :src (cell= (images image-index)) :width (cell= innerWidth) :height (cell= (quot innerWidth 2)))
+         (button :click #(swap! image-index (fn [old] (rem (inc old) 5))) "next")
+         )))
