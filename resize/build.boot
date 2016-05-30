@@ -1,10 +1,10 @@
 (set-env!
   :dependencies '[[adzerk/boot-cljs          "1.7.228-1"]
-                  [adzerk/boot-reload        "0.4.7"]
+                  [adzerk/boot-reload        "0.4.8"]
                   [hoplon/boot-hoplon        "0.1.13"]
-                  [hoplon/hoplon             "6.0.0-alpha14"]
-                  [org.clojure/clojure       "1.8.0"]
-                  [org.clojure/clojurescript "1.8.40"]
+                  [hoplon/hoplon             "6.0.0-alpha15"]
+                  [org.clojure/clojure       "1.9.0-alpha3"]
+                  [org.clojure/clojurescript "1.8.51"]
                   [tailrecursion/boot-jetty  "0.1.3"]]
   :source-paths #{"src"}
   :asset-paths  #{"assets"})
