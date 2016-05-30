@@ -33,6 +33,7 @@
 
 (def images ["1.jpg" "2.jpg" "3.jpg" "4.jpg" "5.jpg"])
 (def image-index (cell 0))
+(.setInterval js/window #(swap! image-index (fn [old] (rem (inc old) 5))) 3000)
 
 (html
   (head
@@ -83,5 +84,4 @@
                               "unyellow p")))
                   ))
          (img :src (cell= (images image-index)) :width (cell= innerWidth) :height (cell= (quot innerWidth 2)))
-         (button :click #(swap! image-index (fn [old] (rem (inc old) 5))) "next")
          )))
