@@ -10,9 +10,7 @@
 (def screenWidth (cell (aget (aget js.window "screen") "width")))
 (def screenHeight (cell (aget (aget js.window "screen") "height")))
 (def windowInnerWidth (cell window.innerWidth))
-(def innerWidth (cell= (max 500 (- windowInnerWidth 40))))
 (def windowInnerHeight (cell window.innerHeight))
-(def innerHeight (cell= (max 500 (- windowInnerHeight 40))))
 
 (def isFullScreen (cell= (= windowInnerHeight screenHeight)))
 
@@ -23,6 +21,9 @@
       (reset! windowInnerWidth window.innerWidth)
       (reset! windowInnerHeight window.innerHeight)
       )
+
+(def innerWidth (cell= (max 500 (- windowInnerWidth 40))))
+(def innerHeight (cell= (max 500 (- windowInnerHeight 40))))
 
 (set! (.-onresize js/window) resize)
 
@@ -49,10 +50,11 @@
     (link :href "app.css" :rel "stylesheet"))
   (body
     (div :id "me" :css (cell= {:width            innerWidth
+                               :height           innerHeight
+                               :overflow         "auto"
                                :background-color "lightgrey"})
          (h1 "Hello, Hoplon! How are you these days?")
-         (hr :css (cell= {:width 100}))
-         (hr :css (cell= {:width innerWidth}))
+         (hr :css (cell= {:width 480}))
          (p "is fullScreen: " (cell= (if fullScreenElement "true" "false")))
          (p "screenWidth: " screenWidth ", screenHeight: "screenHeight)
          (p "windowInnerWidth: " windowInnerWidth ", windowInnerHeight: " windowInnerHeight)
@@ -93,7 +95,5 @@
                                 (.css (js/jQuery "p") "backgroundColor" ""))
                               "unyellow p")))
                   ))
-         (div
-           :slide-toggle (cell= (not fullScreenElement))
-           (img :src (cell= (images image-index)) :width (cell= innerWidth) :height (cell= (quot innerWidth 2))))
+         (img :src (cell= (images image-index)) :width (cell= (- innerWidth 20)) :height (cell= (quot innerWidth 2)))
          )))
