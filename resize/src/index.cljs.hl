@@ -2,6 +2,11 @@
 
 (set! cljs.core/*print-fn* #(.log js/console %))
 
+(defn getFullScreenElement [] (or (aget js.document "fullscreenElement")
+                                  (aget js.document "mozFullScreenElement")
+                                  (aget js.document "webkitFullscreenElement")))
+
+(def fullScreenElement (cell (getFullScreenElement)))
 (def screenWidth (cell (aget (aget js.window "screen") "width")))
 (def screenHeight (cell (aget (aget js.window "screen") "height")))
 (def windowInnerWidth (cell window.innerWidth))
@@ -12,6 +17,7 @@
 (def isFullScreen (cell= (= windowInnerHeight screenHeight)))
 
 (defn resize []
+      (reset! fullScreenElement (getFullScreenElement))
       (reset! screenWidth (aget (aget js.window "screen") "width"))
       (reset! screenHeight (aget (aget js.window "screen") "height"))
       (reset! windowInnerWidth window.innerWidth)
@@ -47,6 +53,7 @@
          (h1 "Hello, Hoplon! How are you these days?")
          (hr :css (cell= {:width 100}))
          (hr :css (cell= {:width innerWidth}))
+         (p "is fullScreen: " (cell= (if fullScreenElement "true" "false")))
          (p "screenWidth: " screenWidth ", screenHeight: "screenHeight)
          (p "windowInnerWidth: " windowInnerWidth ", windowInnerHeight: " windowInnerHeight)
          (p "innerWidth: " innerWidth ", innerHeight: " innerHeight)
@@ -63,7 +70,7 @@
            )
          (br)
          (button :click fullscreen
-                 :disabled isFullScreen
+                 :disabled fullScreenElement
                  "full screen")
          (br) (br)
          (button :click #(.write js/document "Hello world!") "overwrite document")
@@ -87,6 +94,6 @@
                               "unyellow p")))
                   ))
          (div
-           :slide-toggle (cell= (not isFullScreen))
+           :slide-toggle (cell= (not fullScreenElement))
            (img :src (cell= (images image-index)) :width (cell= innerWidth) :height (cell= (quot innerWidth 2))))
          )))
