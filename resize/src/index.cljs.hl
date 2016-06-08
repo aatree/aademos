@@ -1,16 +1,19 @@
 (page "index.html")
 
 (set! cljs.core/*print-fn* #(.log js/console %))
-(println (aget (aget js.window "screen") "height"))
 
+(def screenWidth (cell (aget (aget js.window "screen") "width")))
+(def screenHeight (cell (aget (aget js.window "screen") "height")))
 (def windowInnerWidth (cell window.innerWidth))
 (def innerWidth (cell= (max 500 (- windowInnerWidth 40))))
 (def windowInnerHeight (cell window.innerHeight))
 (def innerHeight (cell= (max 500 (- windowInnerHeight 40))))
 
-(def isFullScreen (cell= (= windowInnerHeight (aget (aget js.window "screen") "height"))))
+(def isFullScreen (cell= (= windowInnerHeight screenHeight)))
 
 (defn resize []
+      (reset! screenWidth (aget (aget js.window "screen") "width"))
+      (reset! screenHeight (aget (aget js.window "screen") "height"))
       (reset! windowInnerWidth window.innerWidth)
       (reset! windowInnerHeight window.innerHeight)
       )
@@ -44,6 +47,7 @@
          (h1 "Hello, Hoplon! How are you these days?")
          (hr :css (cell= {:width 100}))
          (hr :css (cell= {:width innerWidth}))
+         (p "screenWidth: " screenWidth ", screenHeight: "screenHeight)
          (p "windowInnerWidth: " windowInnerWidth ", windowInnerHeight: " windowInnerHeight)
          (p "innerWidth: " innerWidth ", innerHeight: " innerHeight)
          (p "(Minimum inner width and height are 500.)")
@@ -80,8 +84,9 @@
                               #(do
                                 (reset! yellowed false)
                                 (.css (js/jQuery "p") "backgroundColor" ""))
-                              :disabled (cell= (not yellowed))
                               "unyellow p")))
                   ))
-         (img :src (cell= (images image-index)) :width (cell= innerWidth) :height (cell= (quot innerWidth 2)))
+         (div
+           :slide-toggle (cell= (not isFullScreen))
+           (img :src (cell= (images image-index)) :width (cell= innerWidth) :height (cell= (quot innerWidth 2))))
          )))
